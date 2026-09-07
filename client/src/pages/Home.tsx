@@ -12,6 +12,7 @@ import { AddTenantModal } from "@/components/AddTenantModal";
 import { SettingsModal } from "@/components/SettingsModal";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import {
   AlertCircle, ArrowUpRight, Bell, Building2, Check, CheckCircle2, ChevronDown,
   CircleDollarSign, CreditCard, LayoutDashboard, LifeBuoy, LogOut, Menu, MessageCircle,
@@ -44,6 +45,7 @@ export default function Home() {
   const { data: tenants = [], isLoading: tenantsLoading } = trpc.tenants.list.useQuery();
   const { data: properties = [] } = trpc.properties.list.useQuery();
   const { data: recentLogs = [], isLoading: logsLoading } = trpc.reminders.listLogs.useQuery({ limit: 12 });
+  const { data: recentPayments = [] } = trpc.payments.listRecent.useQuery({ limit: 100 });
 
   const runBatchCheck = trpc.reminders.runBatchCheck.useMutation({
     onSuccess: (data) => {
@@ -72,6 +74,22 @@ export default function Home() {
   const portfolioDue = collectedThisCycle + outstandingDebt;
   const collectionRate = portfolioDue > 0 ? Math.round((collectedThisCycle / portfolioDue) * 100) : 0;
   const averageDebt = tenants.length > 0 ? outstandingDebt / tenants.length : 0;
+  const paymentTrend = useMemo(() => {
+    const months = Array.from({ length: 6 }, (_, index) => {
+      const date = new Date();
+      date.setMonth(date.getMonth() - (5 - index), 1);
+      return { key: `${date.getFullYear()}-${date.getMonth()}`, month: format(date, "MMM"), collected: 0, payments: 0 };
+    });
+    recentPayments.forEach((payment) => {
+      const date = new Date(payment.paidAt);
+      const bucket = months.find((month) => month.key === `${date.getFullYear()}-${date.getMonth()}`);
+      if (bucket) {
+        bucket.collected += parseFloat(payment.amount);
+        bucket.payments += 1;
+      }
+    });
+    return months;
+  }, [recentPayments]);
 
   return (
     <div className="min-h-screen bg-[#f6f8f8] text-slate-950 flex">
@@ -128,6 +146,7 @@ export default function Home() {
             </div>
             <div className="flex items-center gap-2 sm:gap-3">
               <Button variant="outline" size="sm" onClick={() => runBatchCheck.mutate()} disabled={runBatchCheck.isPending} className="hidden h-9 gap-2 border-slate-200 bg-white text-xs font-bold sm:flex"><RefreshCw className={`h-3.5 w-3.5 ${runBatchCheck.isPending ? "animate-spin" : ""}`} />Run auto-scan</Button>
+              <Button variant="outline" size="sm" onClick={() => window.print()} className="hidden h-9 gap-1.5 border-slate-200 bg-white text-xs font-bold md:flex"><ArrowUpRight className="h-3.5 w-3.5" />Export PDF</Button>
               <Button variant="outline" size="sm" onClick={() => setIsAddPaymentOpen(true)} className="hidden h-9 gap-1.5 border-[#b9dcd6] bg-white text-xs font-bold text-[#0b645c] sm:flex"><CreditCard className="h-3.5 w-3.5" />Add payment</Button>
               <Button size="sm" onClick={() => setIsAddTenantOpen(true)} className="h-9 gap-1.5 bg-[#0b645c] text-xs font-bold shadow-[0_7px_15px_rgba(11,100,92,.18)] hover:bg-[#09564f]"><Plus className="h-3.5 w-3.5" />Add tenant</Button>
             </div>
@@ -157,6 +176,14 @@ export default function Home() {
             </div>
             <div className="rounded-2xl bg-white p-5 ring-1 ring-slate-200"><div className="flex items-center justify-between"><div className="text-[11px] font-bold uppercase tracking-[.13em] text-slate-400">Average debt / tenant</div><div className="grid h-9 w-9 place-items-center rounded-xl bg-[#fff4ec] text-[#d45753]"><Wallet className="h-4 w-4" /></div></div><div className="mt-3 font-display text-3xl font-bold">${averageDebt.toFixed(2)}</div><p className="mt-1 text-xs text-slate-500">Across {tenants.length} tracked tenants</p></div>
             <div className="rounded-2xl bg-[#fff7e4] p-5 ring-1 ring-[#f3e4bd]"><div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[.13em] text-[#9a6b2d]"><TrendingUp className="h-4 w-4" />Portfolio insight</div><p className="mt-3 text-sm font-semibold leading-5 text-[#60471e]">{collectionRate >= 80 ? "Collection is healthy. Focus reminders on the remaining overdue balances." : "Collection needs attention. Start with the largest balances and overdue tenants."}</p><p className="mt-2 text-[11px] leading-4 text-[#8b6d39]">This uses recorded payments and current tenant debt; it is an operational collection metric, not a bank balance.</p></div>
+          </section>
+
+          <section className="mt-6 grid gap-4 xl:grid-cols-[1.35fr_.65fr]">
+            <div className="rounded-2xl bg-white p-5 ring-1 ring-slate-200">
+              <div className="flex items-start justify-between"><div><h3 className="font-display text-lg font-bold tracking-tight">Monthly collection trend</h3><p className="mt-1 text-xs text-slate-500">Recorded landlord payments by month</p></div><div className="rounded-lg bg-[#e7f4ee] px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-[#238059]">Recorded currency</div></div>
+              <div className="mt-5 h-[210px] w-full"><ResponsiveContainer width="100%" height="100%"><BarChart data={paymentTrend} margin={{ top: 4, right: 4, left: -18, bottom: 0 }}><CartesianGrid vertical={false} stroke="#edf1f1" /><XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "#94a3b8" }} /><YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "#94a3b8" }} tickFormatter={(value) => `$${value}`} /><Tooltip cursor={{ fill: "#f7faf9" }} formatter={(value: number) => [`$${value.toFixed(2)}`, "Collected"]} contentStyle={{ borderRadius: 12, border: "1px solid #e2e8f0", fontSize: 12 }} /><Bar dataKey="collected" fill="#0b645c" radius={[6, 6, 0, 0]} maxBarSize={34} /></BarChart></ResponsiveContainer></div>
+            </div>
+            <div className="rounded-2xl bg-white p-5 ring-1 ring-slate-200"><div><h3 className="font-display text-lg font-bold tracking-tight">Payment history</h3><p className="mt-1 text-xs text-slate-500">Number of payments recorded each month</p></div><div className="mt-5 space-y-3">{paymentTrend.map((month) => <div key={month.key} className="flex items-center gap-3"><span className="w-8 text-xs font-bold text-slate-500">{month.month}</span><div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-100"><div className="h-full rounded-full bg-[#f0bc54]" style={{ width: `${Math.min(month.payments * 20, 100)}%` }} /></div><span className="w-5 text-right text-xs font-bold text-slate-700">{month.payments}</span></div>)}</div><div className="mt-5 border-t border-slate-100 pt-4 text-xs text-slate-500"><span className="font-bold text-slate-900">{recentPayments.length}</span> recent payment records available for reporting.</div></div>
           </section>
 
           {/* focused callout */}
