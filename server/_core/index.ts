@@ -8,6 +8,7 @@ import { registerStorageProxy } from "./storageProxy";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
+import { runAutomatedReminderCheck } from "../rentEngine";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -37,6 +38,17 @@ async function startServer() {
   registerStorageProxy(app);
   registerOAuthRoutes(app);
   // tRPC API
+  app.post("/api/scheduled/rentReminders", async (req, res) => {
+    try {
+      const result = await runAutomatedReminderCheck("scheduled_heartbeat");
+      return res.json({ ok: true, result });
+    } catch (err: any) {
+      return res.status(500).json({
+        error: err?.message || "Scheduled rent reminder check failed",
+        timestamp: new Date().toISOString(),
+      });
+    }
+  });
   app.use(
     "/api/trpc",
     createExpressMiddleware({
