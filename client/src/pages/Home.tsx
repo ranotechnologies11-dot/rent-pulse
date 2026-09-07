@@ -15,8 +15,8 @@ import { format } from "date-fns";
 import {
   AlertCircle, ArrowUpRight, Bell, Building2, Check, CheckCircle2, ChevronDown,
   CircleDollarSign, CreditCard, LayoutDashboard, LifeBuoy, LogOut, Menu, MessageCircle,
-  MoreHorizontal, Plus, RefreshCw, Search, Settings, ShieldCheck, Sparkles, Users,
-  WalletCards, X, Zap,
+  MoreHorizontal, Percent, Plus, RefreshCw, Search, Settings, ShieldCheck, Sparkles, TrendingUp, Users,
+  Wallet, WalletCards, X, Zap,
 } from "lucide-react";
 
 const navItems = [
@@ -67,6 +67,11 @@ export default function Home() {
 
   const totalDebt = stats?.totalDebt ?? "0.00";
   const overdueCount = stats?.overdueTenantsCount ?? 0;
+  const collectedThisCycle = parseFloat(stats?.collectedThisMonth ?? "0");
+  const outstandingDebt = parseFloat(totalDebt);
+  const portfolioDue = collectedThisCycle + outstandingDebt;
+  const collectionRate = portfolioDue > 0 ? Math.round((collectedThisCycle / portfolioDue) * 100) : 0;
+  const averageDebt = tenants.length > 0 ? outstandingDebt / tenants.length : 0;
 
   return (
     <div className="min-h-screen bg-[#f6f8f8] text-slate-950 flex">
@@ -142,6 +147,16 @@ export default function Home() {
             <StatCard label="Paid this cycle" value={`$${stats?.collectedThisMonth ?? "0.00"}`} helper="Payments recorded by landlord" icon={<CheckCircle2 className="h-5 w-5" />} tone="mint" />
             <StatCard label="Tenants tracked" value={String(stats?.totalTenants ?? 0)} helper={`${stats?.totalProperties ?? 0} properties in portfolio`} icon={<Users className="h-5 w-5" />} tone="cream" />
             <div className="relative overflow-hidden rounded-2xl bg-[#143e3a] p-5 text-white shadow-[0_12px_30px_rgba(20,62,58,.11)]"><div className="absolute -right-7 -top-7 h-28 w-28 rounded-full border-[18px] border-white/10" /><div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-[.14em] text-teal-100"><span>Automation health</span><Zap className="h-4 w-4 text-[#f5c96a]" /></div><div className="mt-3 flex items-baseline gap-2"><span className="font-display text-[25px] font-bold">Active</span><span className="h-2 w-2 rounded-full bg-[#f5c96a] shadow-[0_0_0_5px_rgba(245,201,106,.15)]" /></div><p className="mt-1 text-xs leading-5 text-teal-100/75">Daily due-date and overdue checks are running.</p></div>
+          </section>
+
+          <section className="mt-6 grid gap-4 lg:grid-cols-[1.15fr_.85fr_1fr]">
+            <div className="rounded-2xl bg-white p-5 ring-1 ring-slate-200">
+              <div className="flex items-center justify-between"><div className="text-[11px] font-bold uppercase tracking-[.13em] text-slate-400">Collection rate</div><div className="grid h-9 w-9 place-items-center rounded-xl bg-[#e7f4ee] text-[#238059]"><Percent className="h-4 w-4" /></div></div>
+              <div className="mt-3 flex items-end justify-between gap-3"><div className="font-display text-3xl font-bold">{collectionRate}%</div><div className="pb-1 text-right text-[11px] text-slate-500">${collectedThisCycle.toFixed(2)} collected<br />of ${portfolioDue.toFixed(2)} due</div></div>
+              <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-100"><div className="h-full rounded-full bg-[#0b645c] transition-all" style={{ width: `${collectionRate}%` }} /></div>
+            </div>
+            <div className="rounded-2xl bg-white p-5 ring-1 ring-slate-200"><div className="flex items-center justify-between"><div className="text-[11px] font-bold uppercase tracking-[.13em] text-slate-400">Average debt / tenant</div><div className="grid h-9 w-9 place-items-center rounded-xl bg-[#fff4ec] text-[#d45753]"><Wallet className="h-4 w-4" /></div></div><div className="mt-3 font-display text-3xl font-bold">${averageDebt.toFixed(2)}</div><p className="mt-1 text-xs text-slate-500">Across {tenants.length} tracked tenants</p></div>
+            <div className="rounded-2xl bg-[#fff7e4] p-5 ring-1 ring-[#f3e4bd]"><div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[.13em] text-[#9a6b2d]"><TrendingUp className="h-4 w-4" />Portfolio insight</div><p className="mt-3 text-sm font-semibold leading-5 text-[#60471e]">{collectionRate >= 80 ? "Collection is healthy. Focus reminders on the remaining overdue balances." : "Collection needs attention. Start with the largest balances and overdue tenants."}</p><p className="mt-2 text-[11px] leading-4 text-[#8b6d39]">This uses recorded payments and current tenant debt; it is an operational collection metric, not a bank balance.</p></div>
           </section>
 
           {/* focused callout */}
