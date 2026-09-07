@@ -110,6 +110,13 @@
   }
   body {
     @apply bg-background text-foreground;
+    min-width: 320px;
+    min-height: 100dvh;
+    overscroll-behavior-y: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  button, a, input, select, textarea {
+    touch-action: manipulation;
   }
   button:not(:disabled),
   [role="button"]:not([aria-disabled="true"]),
@@ -121,6 +128,12 @@
   input[type="checkbox"]:not(:disabled),
   input[type="radio"]:not(:disabled) {
     @apply cursor-pointer;
+  }
+}
+
+@media (max-width: 639px) {
+  body {
+    padding-bottom: env(safe-area-inset-bottom);
   }
 }
 
