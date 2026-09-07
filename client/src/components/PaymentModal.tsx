@@ -109,10 +109,10 @@ export function PaymentModal({ isOpen, onClose, tenant, onSuccess }: PaymentModa
       <DialogContent className="sm:max-w-lg border-border/80 shadow-2xl">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold font-display flex items-center gap-2">
-            Record Payment Received
+            Save Payment & Update Balance
           </DialogTitle>
           <DialogDescription>
-            Record a payment received from <span className="font-semibold text-foreground">{tenant.fullName}</span> (Unit {tenant.unitNumber}). This landlord-only action updates the debt ledger and logs the confirmation.
+            Enter a payment received from <span className="font-semibold text-foreground">{tenant.fullName}</span> (Unit {tenant.unitNumber}). Use this for cash, M-PESA shown on the landlord phone, bank transfer, or any other payment you have confirmed.
           </DialogDescription>
         </DialogHeader>
 
@@ -133,13 +133,13 @@ export function PaymentModal({ isOpen, onClose, tenant, onSuccess }: PaymentModa
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 <MessageSquareText className="w-3.5 h-3.5" />
-                Balance Confirmation Logged:
+                Balance Updated & Confirmation Logged:
               </div>
               <div className="p-4 rounded-xl bg-muted/60 border border-border text-sm font-mono leading-relaxed whitespace-pre-wrap">
                 "{receiptResult.receiptMessage}"
               </div>
               <p className="text-xs text-muted-foreground">
-                Delivery target: {tenant.phone} and {tenant.email}
+                Next step: connect SMS delivery to send this balance confirmation
               </p>
             </div>
 
@@ -171,7 +171,7 @@ export function PaymentModal({ isOpen, onClose, tenant, onSuccess }: PaymentModa
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
                 <Label htmlFor="payment-amount" className="text-xs font-semibold">
-                  Amount Received ($)
+                  Amount Received from Tenant ($)
                 </Label>
                 {parseFloat(tenant.currentBalance) > 0 && (
                   <button
@@ -199,18 +199,18 @@ export function PaymentModal({ isOpen, onClose, tenant, onSuccess }: PaymentModa
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label htmlFor="method" className="text-xs font-semibold">
-                  Payment Channel
+                  How Did the Tenant Pay?
                 </Label>
                 <Select value={paymentMethod} onValueChange={setPaymentMethod}>
                   <SelectTrigger id="method">
                     <SelectValue placeholder="Select method" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="bank_transfer">Bank Transfer (ACH)</SelectItem>
-                    <SelectItem value="card">Debit / Credit Card</SelectItem>
-                    <SelectItem value="check">Check / Money Order</SelectItem>
-                    <SelectItem value="cash">Cash Receipt</SelectItem>
-                    <SelectItem value="zelle">Zelle / Wire</SelectItem>
+                    <SelectItem value="bank_transfer">Bank transfer</SelectItem>
+                    <SelectItem value="mpesa_sms">M-PESA shown on phone</SelectItem>
+                    <SelectItem value="check">Check / money order</SelectItem>
+                    <SelectItem value="cash">Cash received</SelectItem>
+                    <SelectItem value="zelle">Other / wire transfer</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -231,7 +231,7 @@ export function PaymentModal({ isOpen, onClose, tenant, onSuccess }: PaymentModa
             <div className="text-xs text-muted-foreground bg-accent/40 border border-accent/60 p-3 rounded-lg flex items-center gap-2">
               <ShieldAlert className="w-4 h-4 text-primary shrink-0" />
               <span>
-                Submitting records money received, recalculates the tenant's remaining debt, and logs the balance confirmation for your records.
+                This landlord entry subtracts the amount received from the tenant's current debt. A $0 balance is marked PAID; a partial amount leaves the new balance outstanding.
               </span>
             </div>
 
@@ -244,7 +244,7 @@ export function PaymentModal({ isOpen, onClose, tenant, onSuccess }: PaymentModa
                 Cancel
               </Button>
               <Button type="submit" disabled={recordPayment.isPending}>
-                {recordPayment.isPending ? "Recording..." : "Record Payment Received"}
+                {recordPayment.isPending ? "Recording..." : "Save Payment & Update Balance"}
               </Button>
             </DialogFooter>
           </form>
