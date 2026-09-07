@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Link } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -15,16 +16,16 @@ import { format } from "date-fns";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import {
   AlertCircle, ArrowUpRight, Bell, Building2, Check, CheckCircle2, ChevronDown,
-  CircleDollarSign, CreditCard, LayoutDashboard, LifeBuoy, LogOut, Menu, MessageCircle,
-  MoreHorizontal, Percent, Plus, RefreshCw, Search, Settings, ShieldCheck, Sparkles, TrendingUp, Users,
+  CircleDollarSign, CreditCard, FileText, LayoutDashboard, LifeBuoy, LogOut, Menu, MessageCircle,
+  MoreHorizontal, Percent, Plus, RefreshCw, Search, Settings, ShieldCheck, Sparkles, TrendingUp, UserCircle, Users,
   Wallet, WalletCards, X, Zap,
 } from "lucide-react";
 
 const navItems = [
-  { label: "Overview", icon: LayoutDashboard },
-  { label: "Tenants & leases", icon: Users },
-  { label: "Payments", icon: WalletCards },
-  { label: "Reminders", icon: Bell },
+  { label: "Overview", href: "/", icon: LayoutDashboard },
+  { label: "Progress", href: "/progress", icon: WalletCards },
+  { label: "PDF reports", href: "/reports", icon: FileText },
+  { label: "Profile", href: "/profile", icon: UserCircle },
 ];
 
 export default function Home() {
@@ -107,12 +108,12 @@ export default function Home() {
 
           <div className="mt-9 px-3 text-[10px] font-bold uppercase tracking-[.18em] text-slate-400">Workspace</div>
           <nav className="mt-2 space-y-1">
-            {navItems.map(({ label, icon: Icon }) => (
-              <button key={label} onClick={() => { setActiveNav(label); setMobileNavOpen(false); }} className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-[13px] font-semibold transition ${activeNav === label ? "bg-[#e6f3f0] text-[#0b645c]" : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"}`}>
+            {navItems.map(({ label, href, icon: Icon }) => (
+              <Link key={label} href={href} onClick={() => setMobileNavOpen(false)} className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-[13px] font-semibold transition ${activeNav === label ? "bg-[#e6f3f0] text-[#0b645c]" : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"}`}>
                 <Icon className="h-[17px] w-[17px]" />
                 <span>{label}</span>
-                {label === "Reminders" && <span className="ml-auto grid h-5 min-w-5 place-items-center rounded-full bg-[#f5c96a] px-1.5 text-[10px] font-bold text-[#5a4310]">{overdueCount}</span>}
-              </button>
+                {label === "Progress" && <span className="ml-auto text-[10px] text-slate-400">analytics</span>}
+              </Link>
             ))}
           </nav>
 

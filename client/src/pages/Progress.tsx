@@ -1,0 +1,24 @@
+import { useMemo } from "react";
+import { format } from "date-fns";
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { ArrowUpRight, CircleDollarSign, CreditCard, TrendingUp } from "lucide-react";
+import { trpc } from "@/lib/trpc";
+import { LandlordPageShell, PageNav } from "@/components/LandlordPageShell";
+
+export default function Progress() {
+  const { data: stats } = trpc.dashboard.stats.useQuery();
+  const { data: tenants = [] } = trpc.tenants.list.useQuery();
+  const { data: payments = [] } = trpc.payments.listRecent.useQuery({ limit: 100 });
+  const trend = useMemo(() => {
+    const months = Array.from({ length: 6 }, (_, index) => { const d = new Date(); d.setMonth(d.getMonth() - (5 - index), 1); return { key: `${d.getFullYear()}-${d.getMonth()}`, month: format(d, "MMM"), collected: 0, payments: 0 }; });
+    payments.forEach((payment) => { const d = new Date(payment.paidAt); const bucket = months.find((m) => m.key === `${d.getFullYear()}-${d.getMonth()}`); if (bucket) { bucket.collected += parseFloat(payment.amount); bucket.payments += 1; } });
+    return months;
+  }, [payments]);
+  const debt = parseFloat(stats?.totalDebt ?? "0");
+  const collected = parseFloat(stats?.collectedThisMonth ?? "0");
+  const due = debt + collected;
+  const rate = due ? Math.round((collected / due) * 100) : 0;
+  return <LandlordPageShell title="Progress" eyebrow="Financial progress" description="Understand how much has been collected, what remains outstanding, and how payment activity is moving over time."><PageNav /><div className="grid gap-4 md:grid-cols-3"><Metric label="Collection rate" value={`${rate}%`} detail={`$${collected.toFixed(2)} collected of $${due.toFixed(2)} due`} icon={<TrendingUp className="h-5 w-5" />} /><Metric label="Outstanding debt" value={`$${debt.toFixed(2)}`} detail={`${stats?.overdueTenantsCount ?? 0} tenants need follow-up`} icon={<CircleDollarSign className="h-5 w-5" />} /><Metric label="Payments recorded" value={String(payments.length)} detail={`${tenants.length} tenants tracked`} icon={<CreditCard className="h-5 w-5" />} /></div><div className="mt-6 grid gap-6 xl:grid-cols-[1.3fr_.7fr]"><div className="rounded-2xl bg-white p-5 ring-1 ring-slate-200"><h2 className="font-display text-lg font-bold">Monthly collection trend</h2><p className="mt-1 text-xs text-slate-500">Recorded payments by month</p><div className="mt-6 h-[280px]"><ResponsiveContainer width="100%" height="100%"><BarChart data={trend} margin={{ top: 8, right: 8, left: -18, bottom: 0 }}><CartesianGrid vertical={false} stroke="#edf1f1" /><XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "#94a3b8" }} /><YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "#94a3b8" }} tickFormatter={(value) => `$${value}`} /><Tooltip formatter={(value: number) => [`$${value.toFixed(2)}`, "Collected"]} contentStyle={{ borderRadius: 12, border: "1px solid #e2e8f0", fontSize: 12 }} /><Bar dataKey="collected" fill="#0b645c" radius={[6, 6, 0, 0]} maxBarSize={38} /></BarChart></ResponsiveContainer></div></div><div className="rounded-2xl bg-[#fff7e4] p-5 ring-1 ring-[#f3e4bd]"><div className="flex items-center gap-2 text-[#9a6b2d]"><TrendingUp className="h-4 w-4" /><h2 className="font-display text-lg font-bold">What to do next</h2></div><p className="mt-4 text-sm font-semibold leading-6 text-[#60471e]">{rate >= 80 ? "Your collection pace is healthy. Focus on keeping payment dates consistent." : "Collection needs attention. Start with the largest balances and overdue tenants."}</p><div className="mt-6 space-y-3 text-xs text-[#8b6d39]"><div className="flex items-center justify-between border-b border-[#eedfb8] pb-3"><span>Total tenant debt</span><strong>${debt.toFixed(2)}</strong></div><div className="flex items-center justify-between border-b border-[#eedfb8] pb-3"><span>Average debt / tenant</span><strong>${(tenants.length ? debt / tenants.length : 0).toFixed(2)}</strong></div><div className="flex items-center justify-between"><span>Open payment records</span><strong>{payments.length}</strong></div></div><a href="/#top" className="mt-6 flex items-center gap-2 text-xs font-bold text-[#0b645c]">Return to overview <ArrowUpRight className="h-3.5 w-3.5" /></a></div></div></LandlordPageShell>;
+}
+
+function Metric({ label, value, detail, icon }: { label: string; value: string; detail: string; icon: React.ReactNode }) { return <div className="rounded-2xl bg-white p-5 ring-1 ring-slate-200"><div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-[.13em] text-slate-400"><span>{label}</span><span className="grid h-9 w-9 place-items-center rounded-xl bg-[#e7f4ee] text-[#238059]">{icon}</span></div><div className="mt-4 font-display text-3xl font-bold">{value}</div><p className="mt-1 text-xs text-slate-500">{detail}</p></div>; }
