@@ -92,15 +92,15 @@ export function SendReminderModal({
             Dispatch Tenant Rent Reminder
           </DialogTitle>
           <DialogDescription>
-            Send an instant rent notification to {tenant.fullName} (Unit {tenant.unitNumber}) regarding their current balance.
+            Send an instant payment reminder to {tenant.fullName} (Unit {tenant.unitNumber}) with the exact amount they still owe.
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-2">
           <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50 border border-border text-xs">
             <div>
-              <span className="text-muted-foreground block">Tenant Balance</span>
-              <span className="text-sm font-bold text-foreground">${tenant.currentBalance}</span>
+              <span className="text-muted-foreground block">Amount to remind</span>
+              <span className="text-sm font-bold text-rose-600">${tenant.currentBalance}</span>
             </div>
             <div>
               <span className="text-muted-foreground block">Phone</span>
@@ -114,7 +114,7 @@ export function SendReminderModal({
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label className="text-xs font-semibold">Reminder Reason</Label>
+              <Label className="text-xs font-semibold">Reminder Type</Label>
               <Select
                 value={triggerType}
                 onValueChange={(val: "approaching" | "due_today" | "overdue" | "manual") =>
@@ -152,10 +152,10 @@ export function SendReminderModal({
 
           <div className="space-y-1.5">
             <Label className="text-xs font-semibold">
-              Custom Message Override (Optional)
+              Message Override (Optional)
             </Label>
             <Textarea
-              placeholder="Leave blank to use system template with automatic debt calculation..."
+              placeholder={`Leave blank to use the template with the exact ${tenant.currentBalance} balance...`}
               value={customMessage}
               onChange={(e) => setCustomMessage(e.target.value)}
               className="h-24 text-sm"
@@ -173,7 +173,7 @@ export function SendReminderModal({
             className="gap-2"
           >
             <Send className="w-4 h-4" />
-            {sendReminder.isPending ? "Sending..." : "Send Now"}
+            {sendReminder.isPending ? "Sending..." : `Send $${tenant.currentBalance} Reminder`}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -63,7 +63,7 @@ export function PaymentModal({ isOpen, onClose, tenant, onSuccess }: PaymentModa
       utils.tenants.getById.invalidate();
       utils.reminders.listLogs.invalidate();
       utils.payments.listRecent.invalidate();
-      toast.success("Payment recorded and confirmation sent to tenant");
+      toast.success("Payment recorded and balance confirmation logged");
       onSuccess?.();
     },
     onError: (err) => {
@@ -109,10 +109,10 @@ export function PaymentModal({ isOpen, onClose, tenant, onSuccess }: PaymentModa
       <DialogContent className="sm:max-w-lg border-border/80 shadow-2xl">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold font-display flex items-center gap-2">
-            Record Tenant Rent Payment
+            Record Payment Received
           </DialogTitle>
           <DialogDescription>
-            Post a payment for <span className="font-semibold text-foreground">{tenant.fullName}</span> (Unit {tenant.unitNumber}). The system updates their debt balance in real time and sends the automated receipt.
+            Record a payment received from <span className="font-semibold text-foreground">{tenant.fullName}</span> (Unit {tenant.unitNumber}). This landlord-only action updates the debt ledger and logs the confirmation.
           </DialogDescription>
         </DialogHeader>
 
@@ -133,13 +133,13 @@ export function PaymentModal({ isOpen, onClose, tenant, onSuccess }: PaymentModa
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 <MessageSquareText className="w-3.5 h-3.5" />
-                Message Delivered to Tenant:
+                Balance Confirmation Logged:
               </div>
               <div className="p-4 rounded-xl bg-muted/60 border border-border text-sm font-mono leading-relaxed whitespace-pre-wrap">
                 "{receiptResult.receiptMessage}"
               </div>
               <p className="text-xs text-muted-foreground">
-                Sent to: {tenant.phone} and {tenant.email}
+                Delivery target: {tenant.phone} and {tenant.email}
               </p>
             </div>
 
@@ -161,7 +161,7 @@ export function PaymentModal({ isOpen, onClose, tenant, onSuccess }: PaymentModa
                 <p className="text-base font-bold text-foreground">${tenant.rentAmount}</p>
               </div>
               <div>
-                <span className="text-xs text-muted-foreground">Current Outstanding Debt</span>
+                <span className="text-xs text-muted-foreground">Current Tenant Debt</span>
                 <p className={`text-base font-bold ${parseFloat(tenant.currentBalance) > 0 ? "text-rose-600 dark:text-rose-400" : "text-emerald-600"}`}>
                   ${tenant.currentBalance}
                 </p>
@@ -171,7 +171,7 @@ export function PaymentModal({ isOpen, onClose, tenant, onSuccess }: PaymentModa
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
                 <Label htmlFor="payment-amount" className="text-xs font-semibold">
-                  Payment Amount ($)
+                  Amount Received ($)
                 </Label>
                 {parseFloat(tenant.currentBalance) > 0 && (
                   <button
@@ -179,7 +179,7 @@ export function PaymentModal({ isOpen, onClose, tenant, onSuccess }: PaymentModa
                     onClick={handlePayFull}
                     className="text-xs text-primary hover:underline font-medium"
                   >
-                    Pay full balance (${tenant.currentBalance})
+                    Record full debt (${tenant.currentBalance})
                   </button>
                 )}
               </div>
@@ -231,7 +231,7 @@ export function PaymentModal({ isOpen, onClose, tenant, onSuccess }: PaymentModa
             <div className="text-xs text-muted-foreground bg-accent/40 border border-accent/60 p-3 rounded-lg flex items-center gap-2">
               <ShieldAlert className="w-4 h-4 text-primary shrink-0" />
               <span>
-                Submitting will recalculate the tenant's remaining debt and automatically trigger the balance notification message.
+                Submitting records money received, recalculates the tenant's remaining debt, and logs the balance confirmation for your records.
               </span>
             </div>
 
@@ -244,7 +244,7 @@ export function PaymentModal({ isOpen, onClose, tenant, onSuccess }: PaymentModa
                 Cancel
               </Button>
               <Button type="submit" disabled={recordPayment.isPending}>
-                {recordPayment.isPending ? "Recording & Sending..." : "Confirm & Send Receipt"}
+                {recordPayment.isPending ? "Recording..." : "Record Payment Received"}
               </Button>
             </DialogFooter>
           </form>
