@@ -10,9 +10,9 @@
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/manus-storage/rentpulse-mark_ba941ccb.png",
-      "sizes": "1920x1920",
-      "type": "image/png",
+      "src": "/icons/rentpulse.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
       "purpose": "any maskable"
     }
   ]

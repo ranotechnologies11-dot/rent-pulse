@@ -22,7 +22,7 @@ export function LandlordPageShell({ title, eyebrow, description, children }: { t
       <div className="flex h-full min-h-[calc(100dvh-2.5rem)] flex-col">
         <div className="flex items-center justify-between px-3">
           <Link href="/" className="flex items-center gap-3" onClick={() => setMobileOpen(false)}>
-            <div className="grid h-10 w-10 place-items-center rounded-xl bg-white p-1.5 shadow-[0_8px_16px_rgba(13,98,90,.18)] dark:bg-[#e8f7f2]"><img src="/manus-storage/rentpulse-mark_ba941ccb.png" alt="RentPulse logo" className="h-full w-full object-contain" /></div>
+            <div className="grid h-10 w-10 place-items-center rounded-xl bg-white p-1.5 shadow-[0_8px_16px_rgba(13,98,90,.18)] dark:bg-[#e8f7f2]"><img src="/icons/rentpulse.svg" alt="RentPulse logo" className="h-full w-full object-contain" /></div>
             <div><div className="font-display text-[17px] font-bold tracking-[-.03em] text-[#193a38]">RentPulse</div><div className="text-[9px] font-bold uppercase tracking-[.2em] text-[#8ca19d]">Landlord OS</div></div>
           </Link>
           <button className="rounded-lg p-2 text-[#7d9290] hover:bg-[#eef4f2] lg:hidden" onClick={() => setMobileOpen(false)} aria-label="Close navigation"><X className="h-4 w-4" /></button>
