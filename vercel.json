@@ -6,9 +6,9 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
-    { "source": "/auth", "destination": "/index.html" },
-    { "source": "/progress", "destination": "/index.html" },
-    { "source": "/reports", "destination": "/index.html" },
-    { "source": "/profile", "destination": "/index.html" }
+    { "source": "/auth", "destination": "/" },
+    { "source": "/progress", "destination": "/" },
+    { "source": "/reports", "destination": "/" },
+    { "source": "/profile", "destination": "/" }
   ]
 }
