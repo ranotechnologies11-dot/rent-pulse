@@ -1,4 +1,4 @@
-const CACHE_NAME = "rentpulse-shell-v2";
+const CACHE_NAME = "rentpulse-shell-v3";
 const API_CACHE = "rentpulse-api-v1";
 const APP_SHELL = ["/", "/auth", "/manifest.webmanifest", "/icons/rentpulse.svg"];
 
@@ -8,7 +8,9 @@ self.addEventListener("install", event => {
 });
 
 self.addEventListener("activate", event => {
-  event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => ![CACHE_NAME, API_CACHE].includes(key)).map(key => caches.delete(key)))));
+  event.waitUntil(caches.keys().then(keys => Promise.all(
+    keys.filter(key => ![CACHE_NAME, API_CACHE].includes(key)).map(key => caches.delete(key)),
+  )));
   self.clients.claim();
 });
 
@@ -16,15 +18,30 @@ self.addEventListener("fetch", event => {
   if (event.request.method !== "GET") return;
   const url = new URL(event.request.url);
   if (url.origin !== self.location.origin) return;
+
   if (url.pathname.startsWith("/api/")) {
     event.respondWith(fetch(event.request).then(response => {
       if (response.ok) caches.open(API_CACHE).then(cache => cache.put(event.request, response.clone()));
       return response;
-    }).catch(() => caches.match(event.request).then(cached => cached || new Response(JSON.stringify({ offline: true }), { headers: { "Content-Type": "application/json" } }))));
+    }).catch(() => caches.match(event.request).then(cached => cached || new Response(
+      JSON.stringify({ offline: true }),
+      { headers: { "Content-Type": "application/json" } },
+    ))));
     return;
   }
+
+  const isNavigation = event.request.mode === "navigate" || event.request.headers.get("accept")?.includes("text/html");
+  const isAsset = url.pathname.startsWith("/assets/");
+  if (isNavigation || isAsset) {
+    event.respondWith(fetch(event.request).then(response => {
+      if (response.ok && isAsset) caches.open(CACHE_NAME).then(cache => cache.put(event.request, response.clone()));
+      return response;
+    }).catch(() => caches.match(event.request).then(cached => cached || caches.match("/"))));
+    return;
+  }
+
   event.respondWith(caches.match(event.request).then(cached => cached || fetch(event.request).then(response => {
     if (response.ok) caches.open(CACHE_NAME).then(cache => cache.put(event.request, response.clone()));
     return response;
-  }).catch(() => caches.match("/"))));
+  })));
 });
