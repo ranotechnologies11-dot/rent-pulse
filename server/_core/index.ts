@@ -9,6 +9,8 @@ import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import { runAutomatedReminderCheck } from "../rentEngine";
+import { createServiceSupabase } from "../supabase";
+import { ENV } from "./env";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -40,8 +42,15 @@ async function startServer() {
   // tRPC API
   app.post("/api/scheduled/rentReminders", async (req, res) => {
     try {
-      const result = await runAutomatedReminderCheck("scheduled_heartbeat");
-      return res.json({ ok: true, result });
+      const authorization = req.header("authorization");
+      const suppliedSecret = authorization?.startsWith("Bearer ") ? authorization.slice(7) : req.header("x-cron-secret");
+      if (!ENV.cronSecret || suppliedSecret !== ENV.cronSecret) {
+        return res.status(401).json({ ok: false, error: "Unauthorized scheduled reminder request." });
+      }
+      const serviceClient = createServiceSupabase();
+      if (!serviceClient) return res.status(503).json({ ok: false, error: "Supabase worker configuration is missing." });
+      const result = await runAutomatedReminderCheck(serviceClient, "cron");
+      return res.json({ ok: true, ...result });
     } catch (err: any) {
       return res.status(500).json({
         error: err?.message || "Scheduled rent reminder check failed",

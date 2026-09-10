@@ -1,359 +1,43 @@
-import { desc, eq, sql } from "drizzle-orm";
-import { drizzle } from "drizzle-orm/mysql2";
-import {
-  InsertInvoice,
-  InsertPayment,
-  InsertProperty,
-  InsertReminderLog,
-  InsertReminderSettings,
-  InsertTenant,
-  InsertUser,
-  invoices,
-  payments,
-  properties,
-  reminderLogs,
-  reminderSettings,
-  tenants,
-  users,
-} from "../drizzle/schema";
-import { ENV } from "./_core/env";
+import type { ServerSupabaseClient } from "./supabase";
 
-let _db: ReturnType<typeof drizzle> | null = null;
+type Client = ServerSupabaseClient;
+type Row = Record<string, any>;
+export async function getDb() { return null; }
+export async function upsertUser(_user: any) { return; }
+export async function getUserByOpenId(_openId: string): Promise<any> { return undefined; }
+const fail = () => { throw new Error("Supabase database is not configured"); };
+const unwrap = <T>(result: { data: T | null; error: any }) => { if (result.error) throw new Error(result.error.message); return result.data as T; };
+const camelProperty = (r: Row) => ({ id: Number(r.id), name: r.name, address: r.address, city: r.city, managerName: r.manager_name, managerPhone: r.manager_phone, managerEmail: r.manager_email, currency: r.currency, ownerId: r.owner_id, createdAt: r.created_at, updatedAt: r.updated_at });
+const camelTenant = (r: Row) => ({ id: Number(r.id), propertyId: Number(r.property_id), unitNumber: r.unit_number, fullName: r.full_name, email: r.email, phone: r.phone, rentAmount: String(r.rent_amount), dueDayOfMonth: r.due_day_of_month, gracePeriodDays: r.grace_period_days, currentBalance: String(r.current_balance), status: r.status, autoRemindersEnabled: r.auto_reminders_enabled, reminderChannel: r.reminder_channel, notes: r.notes, createdAt: r.created_at, updatedAt: r.updated_at });
+const camelInvoice = (r: Row) => ({ id: Number(r.id), tenantId: Number(r.tenant_id), invoiceNumber: r.invoice_number, periodLabel: r.period_label, amountDue: String(r.amount_due), amountPaid: String(r.amount_paid), dueDate: r.due_date, graceUntilDate: r.grace_until_date, status: r.status, createdAt: r.created_at, updatedAt: r.updated_at });
+const camelPayment = (r: Row) => ({ id: Number(r.id), tenantId: Number(r.tenant_id), amount: String(r.amount), paymentMethod: r.payment_method, referenceNumber: r.reference_number, balanceAfterPayment: String(r.balance_after_payment), nextDueDateAfterPayment: r.next_due_date_after_payment, receiptMessage: r.receipt_message, paidAt: r.paid_at, createdAt: r.created_at });
+const camelLog = (r: Row) => ({ id: Number(r.id), tenantId: Number(r.tenant_id), triggerType: r.trigger_type, channel: r.channel, recipient: r.recipient, messageTitle: r.message_title, messageBody: r.message_body, balanceMentioned: String(r.balance_mentioned), dueDateMentioned: r.due_date_mentioned, status: r.status, sentAt: r.sent_at, createdAt: r.created_at });
+const camelSettings = (r: Row) => ({ id: Number(r.id), scheduleCronTaskUid: r.schedule_cron_task_uid, daysBeforeDueNotice: r.days_before_due_notice, sendOnDueDate: r.send_on_due_date, overdueFrequencyDays: r.overdue_frequency_days, quietHoursStart: r.quiet_hours_start, quietHoursEnd: r.quiet_hours_end, autoDispatchEnabled: r.auto_dispatch_enabled, smsTemplateApproaching: r.sms_template_approaching, smsTemplateOverdue: r.sms_template_overdue, smsTemplateReceipt: r.sms_template_receipt, createdAt: r.created_at, updatedAt: r.updated_at });
 
-export async function getDb() {
-  if (!_db && process.env.DATABASE_URL) {
-    try {
-      _db = drizzle(process.env.DATABASE_URL);
-    } catch (error) {
-      console.warn("[Database] Failed to connect:", error);
-      _db = null;
-    }
-  }
-  return _db;
-}
+export async function listProperties(db: Client) { return db ? unwrap<Row[]>(await db.from("properties").select("*").order("id", { ascending: false })).map(camelProperty) : fail(); }
+export async function createProperty(db: Client, data: any, ownerId: string) { if (!db) return fail(); const row = unwrap<Row[]>(await db.from("properties").insert({ owner_id: ownerId, name: data.name, address: data.address, city: data.city, manager_name: data.managerName, manager_phone: data.managerPhone, manager_email: data.managerEmail, currency: data.currency }).select("id").limit(1)); return row[0]?.id; }
 
-export async function upsertUser(user: InsertUser): Promise<void> {
-  if (!user.openId) {
-    throw new Error("User openId is required for upsert");
-  }
+async function tenantsFor(db: Client) { return unwrap<Row[]>(await db.from("tenants").select("*, properties!inner(name,city,manager_phone)").order("current_balance", { ascending: false })).map(r => ({ ...camelTenant(r), propertyName: r.properties?.name, propertyCity: r.properties?.city, managerPhone: r.properties?.manager_phone })); }
+export async function listTenantsWithProperty(db: Client) { return tenantsFor(db); }
+export async function getTenantById(db: Client, tenantId: number) { const rows = unwrap<Row[]>(await db.from("tenants").select("*, properties!inner(*)").eq("id", tenantId).limit(1)); const r = rows[0]; return r ? { tenant: camelTenant(r), property: camelProperty(r.properties) } : undefined; }
+export async function createTenant(db: Client, data: any) { const row = unwrap<Row[]>(await db.from("tenants").insert({ property_id: data.propertyId, unit_number: data.unitNumber, full_name: data.fullName, email: data.email, phone: data.phone, rent_amount: data.rentAmount, due_day_of_month: data.dueDayOfMonth, grace_period_days: data.gracePeriodDays, current_balance: data.currentBalance, status: data.status, auto_reminders_enabled: data.autoRemindersEnabled, reminder_channel: data.reminderChannel, notes: data.notes }).select("id").limit(1)); return row[0]?.id; }
+export async function updateTenant(db: Client, tenantId: number, patch: any) { if (!db) return fail(); const mapped: Row = {}; for (const [k, v] of Object.entries(patch)) mapped[{ currentBalance: "current_balance", status: "status", autoRemindersEnabled: "auto_reminders_enabled", notes: "notes" }[k] ?? k] = v; unwrap(await db.from("tenants").update(mapped).eq("id", tenantId)); }
 
-  const db = await getDb();
-  if (!db) {
-    console.warn("[Database] Cannot upsert user: database not available");
-    return;
-  }
+export async function listInvoicesByTenant(db: Client, tenantId: number) { return unwrap<Row[]>(await db.from("invoices").select("*").eq("tenant_id", tenantId).order("due_date", { ascending: false })).map(camelInvoice); }
+export async function createInvoice(db: Client, data: any) { const row = unwrap<Row[]>(await db.from("invoices").insert({ tenant_id: data.tenantId, invoice_number: data.invoiceNumber, period_label: data.periodLabel, amount_due: data.amountDue, amount_paid: data.amountPaid, due_date: data.dueDate, grace_until_date: data.graceUntilDate, status: data.status }).select("id").limit(1)); return row[0]?.id; }
+export async function updateInvoice(db: Client, invoiceId: number, patch: any) { const mapped: Row = {}; for (const [k, v] of Object.entries(patch)) mapped[{ amountPaid: "amount_paid" }[k] ?? k] = v; unwrap(await db.from("invoices").update(mapped).eq("id", invoiceId)); }
 
-  try {
-    const values: InsertUser = {
-      openId: user.openId,
-    };
-    const updateSet: Record<string, unknown> = {};
+export async function listPayments(db: Client, limitCount = 50) { const rows = unwrap<Row[]>(await db.from("payments").select("*, tenants!inner(full_name,unit_number)").order("paid_at", { ascending: false }).limit(limitCount)); return rows.map(r => ({ ...camelPayment(r), tenantName: r.tenants?.full_name, unitNumber: r.tenants?.unit_number })); }
+export async function listPaymentsByTenant(db: Client, tenantId: number) { return unwrap<Row[]>(await db.from("payments").select("*").eq("tenant_id", tenantId).order("paid_at", { ascending: false })).map(camelPayment); }
+export async function recordPayment(db: Client, data: any) { const row = unwrap<Row[]>(await db.from("payments").insert({ tenant_id: data.tenantId, amount: data.amount, payment_method: data.paymentMethod, reference_number: data.referenceNumber, balance_after_payment: data.balanceAfterPayment, next_due_date_after_payment: data.nextDueDateAfterPayment, receipt_message: data.receiptMessage }).select("id").limit(1)); return row[0]?.id; }
 
-    const textFields = ["name", "email", "loginMethod"] as const;
-    type TextField = (typeof textFields)[number];
+export async function listReminderLogs(db: Client, limitCount = 100) { const rows = unwrap<Row[]>(await db.from("reminder_logs").select("*, tenants!inner(full_name,unit_number)").order("sent_at", { ascending: false }).limit(limitCount)); return rows.map(r => ({ ...camelLog(r), tenantName: r.tenants?.full_name, unitNumber: r.tenants?.unit_number })); }
+export async function listReminderLogsByTenant(db: Client, tenantId: number) { return unwrap<Row[]>(await db.from("reminder_logs").select("*").eq("tenant_id", tenantId).order("sent_at", { ascending: false })).map(camelLog); }
+export async function createReminderLog(db: Client, data: any) { const row = unwrap<Row[]>(await db.from("reminder_logs").insert({ tenant_id: data.tenantId, trigger_type: data.triggerType, channel: data.channel, recipient: data.recipient, message_title: data.messageTitle, message_body: data.messageBody, balance_mentioned: data.balanceMentioned, due_date_mentioned: data.dueDateMentioned, status: data.status }).select("id").limit(1)); return row[0]?.id; }
 
-    const assignNullable = (field: TextField) => {
-      const value = user[field];
-      if (value === undefined) return;
-      const normalized = value ?? null;
-      values[field] = normalized;
-      updateSet[field] = normalized;
-    };
+const defaults = { days_before_due_notice: 3, send_on_due_date: true, overdue_frequency_days: 2, quiet_hours_start: "21:00", quiet_hours_end: "08:00", auto_dispatch_enabled: true, sms_template_approaching: "Hi {{tenant_name}}, friendly reminder from {{property_name}}: your upcoming rent of {{rent_amount}} is due on {{due_date}}. Your total outstanding balance is {{balance}}.", sms_template_overdue: "Notice: Hi {{tenant_name}}, your rent payment to {{property_name}} is currently overdue. Your outstanding balance is {{balance}}.", sms_template_receipt: "Payment Received! Thank you {{tenant_name}}. This is your balance: {{balance_after}}, and this is what is left for you to pay. By {{next_due_date}}, you need to pay it." };
+export async function getReminderSettings(db: Client) { const rows = unwrap<Row[]>(await db.from("reminder_settings").select("*").order("id", { ascending: true }).limit(1)); return rows[0] ? camelSettings(rows[0]) : null; }
+export async function ensureReminderSettings(db: Client) { const existing = await getReminderSettings(db); if (existing) return existing; const { data: authData } = await db.auth.getUser(); const rows = unwrap<Row[]>(await db.from("reminder_settings").insert({ ...defaults, owner_id: authData.user?.id }).select("*").limit(1)); return camelSettings(rows[0]); }
+export async function updateReminderSettings(db: Client, patch: any) { const existing = await ensureReminderSettings(db); const mapped: Row = {}; for (const [k, v] of Object.entries(patch)) mapped[{ daysBeforeDueNotice: "days_before_due_notice", sendOnDueDate: "send_on_due_date", overdueFrequencyDays: "overdue_frequency_days", quietHoursStart: "quiet_hours_start", quietHoursEnd: "quiet_hours_end", autoDispatchEnabled: "auto_dispatch_enabled", smsTemplateApproaching: "sms_template_approaching", smsTemplateOverdue: "sms_template_overdue", smsTemplateReceipt: "sms_template_receipt" }[k] ?? k] = v; unwrap(await db.from("reminder_settings").update(mapped).eq("id", existing.id)); return getReminderSettings(db); }
 
-    textFields.forEach(assignNullable);
-
-    if (user.lastSignedIn !== undefined) {
-      values.lastSignedIn = user.lastSignedIn;
-      updateSet.lastSignedIn = user.lastSignedIn;
-    }
-    if (user.role !== undefined) {
-      values.role = user.role;
-      updateSet.role = user.role;
-    } else if (user.openId === ENV.ownerOpenId) {
-      values.role = "admin";
-      updateSet.role = "admin";
-    }
-
-    if (!values.lastSignedIn) {
-      values.lastSignedIn = new Date();
-    }
-
-    if (Object.keys(updateSet).length === 0) {
-      updateSet.lastSignedIn = new Date();
-    }
-
-    await db.insert(users).values(values).onDuplicateKeyUpdate({
-      set: updateSet,
-    });
-  } catch (error) {
-    console.error("[Database] Failed to upsert user:", error);
-    throw error;
-  }
-}
-
-export async function getUserByOpenId(openId: string) {
-  const db = await getDb();
-  if (!db) return undefined;
-  const result = await db.select().from(users).where(eq(users.openId, openId)).limit(1);
-  return result[0];
-}
-
-// Properties
-export async function listProperties() {
-  const db = await getDb();
-  if (!db) return [];
-  return db.select().from(properties).orderBy(desc(properties.id));
-}
-
-export async function createProperty(data: InsertProperty) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not connected");
-  const res = await db.insert(properties).values(data);
-  return res[0]?.insertId;
-}
-
-// Tenants
-export async function listTenantsWithProperty() {
-  const db = await getDb();
-  if (!db) return [];
-  return db
-    .select({
-      id: tenants.id,
-      propertyId: tenants.propertyId,
-      propertyName: properties.name,
-      propertyCity: properties.city,
-      managerPhone: properties.managerPhone,
-      unitNumber: tenants.unitNumber,
-      fullName: tenants.fullName,
-      email: tenants.email,
-      phone: tenants.phone,
-      rentAmount: tenants.rentAmount,
-      dueDayOfMonth: tenants.dueDayOfMonth,
-      gracePeriodDays: tenants.gracePeriodDays,
-      currentBalance: tenants.currentBalance,
-      status: tenants.status,
-      autoRemindersEnabled: tenants.autoRemindersEnabled,
-      reminderChannel: tenants.reminderChannel,
-      notes: tenants.notes,
-      createdAt: tenants.createdAt,
-      updatedAt: tenants.updatedAt,
-    })
-    .from(tenants)
-    .innerJoin(properties, eq(tenants.propertyId, properties.id))
-    .orderBy(desc(tenants.currentBalance), tenants.fullName);
-}
-
-export async function getTenantById(tenantId: number) {
-  const db = await getDb();
-  if (!db) return undefined;
-  const rows = await db
-    .select({
-      tenant: tenants,
-      property: properties,
-    })
-    .from(tenants)
-    .innerJoin(properties, eq(tenants.propertyId, properties.id))
-    .where(eq(tenants.id, tenantId))
-    .limit(1);
-
-  return rows[0];
-}
-
-export async function createTenant(data: InsertTenant) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not connected");
-  const res = await db.insert(tenants).values(data);
-  return res[0]?.insertId;
-}
-
-export async function updateTenant(tenantId: number, patch: Partial<InsertTenant>) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not connected");
-  await db.update(tenants).set(patch).where(eq(tenants.id, tenantId));
-}
-
-// Invoices
-export async function listInvoicesByTenant(tenantId: number) {
-  const db = await getDb();
-  if (!db) return [];
-  return db
-    .select()
-    .from(invoices)
-    .where(eq(invoices.tenantId, tenantId))
-    .orderBy(desc(invoices.dueDate));
-}
-
-export async function createInvoice(data: InsertInvoice) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not connected");
-  const res = await db.insert(invoices).values(data);
-  return res[0]?.insertId;
-}
-
-export async function updateInvoice(invoiceId: number, patch: Partial<InsertInvoice>) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not connected");
-  await db.update(invoices).set(patch).where(eq(invoices.id, invoiceId));
-}
-
-// Payments
-export async function listPayments(limitCount = 50) {
-  const db = await getDb();
-  if (!db) return [];
-  return db
-    .select({
-      id: payments.id,
-      tenantId: payments.tenantId,
-      tenantName: tenants.fullName,
-      unitNumber: tenants.unitNumber,
-      amount: payments.amount,
-      paymentMethod: payments.paymentMethod,
-      referenceNumber: payments.referenceNumber,
-      balanceAfterPayment: payments.balanceAfterPayment,
-      receiptMessage: payments.receiptMessage,
-      paidAt: payments.paidAt,
-    })
-    .from(payments)
-    .innerJoin(tenants, eq(payments.tenantId, tenants.id))
-    .orderBy(desc(payments.paidAt))
-    .limit(limitCount);
-}
-
-export async function listPaymentsByTenant(tenantId: number) {
-  const db = await getDb();
-  if (!db) return [];
-  return db
-    .select()
-    .from(payments)
-    .where(eq(payments.tenantId, tenantId))
-    .orderBy(desc(payments.paidAt));
-}
-
-export async function recordPayment(data: InsertPayment) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not connected");
-  const res = await db.insert(payments).values(data);
-  return res[0]?.insertId;
-}
-
-// Reminder Logs
-export async function listReminderLogs(limitCount = 100) {
-  const db = await getDb();
-  if (!db) return [];
-  return db
-    .select({
-      id: reminderLogs.id,
-      tenantId: reminderLogs.tenantId,
-      tenantName: tenants.fullName,
-      unitNumber: tenants.unitNumber,
-      triggerType: reminderLogs.triggerType,
-      channel: reminderLogs.channel,
-      recipient: reminderLogs.recipient,
-      messageTitle: reminderLogs.messageTitle,
-      messageBody: reminderLogs.messageBody,
-      balanceMentioned: reminderLogs.balanceMentioned,
-      dueDateMentioned: reminderLogs.dueDateMentioned,
-      status: reminderLogs.status,
-      sentAt: reminderLogs.sentAt,
-    })
-    .from(reminderLogs)
-    .innerJoin(tenants, eq(reminderLogs.tenantId, tenants.id))
-    .orderBy(desc(reminderLogs.sentAt))
-    .limit(limitCount);
-}
-
-export async function listReminderLogsByTenant(tenantId: number) {
-  const db = await getDb();
-  if (!db) return [];
-  return db
-    .select()
-    .from(reminderLogs)
-    .where(eq(reminderLogs.tenantId, tenantId))
-    .orderBy(desc(reminderLogs.sentAt));
-}
-
-export async function createReminderLog(data: InsertReminderLog) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not connected");
-  const res = await db.insert(reminderLogs).values(data);
-  return res[0]?.insertId;
-}
-
-// Settings
-export async function getReminderSettings() {
-  const db = await getDb();
-  if (!db) return null;
-  const rows = await db.select().from(reminderSettings).limit(1);
-  return rows[0] ?? null;
-}
-
-export async function ensureReminderSettings(): Promise<typeof reminderSettings.$inferSelect> {
-  const db = await getDb();
-  if (!db) throw new Error("Database unavailable");
-  const existing = await getReminderSettings();
-  if (existing) return existing;
-
-  const defaultTemplates = {
-    daysBeforeDueNotice: 3,
-    sendOnDueDate: true,
-    overdueFrequencyDays: 2,
-    quietHoursStart: "21:00",
-    quietHoursEnd: "08:00",
-    autoDispatchEnabled: true,
-    smsTemplateApproaching:
-      "Hi {{tenant_name}}, friendly reminder from {{property_name}}: your upcoming rent of {{rent_amount}} is due on {{due_date}}. Your total outstanding balance is {{balance}}. Please make your payment on or before the due date.",
-    smsTemplateOverdue:
-      "Notice: Hi {{tenant_name}}, your rent payment to {{property_name}} is currently overdue. Your outstanding balance is {{balance}}. Immediate payment is required to avoid further actions.",
-    smsTemplateReceipt:
-      "Payment Received! Thank you {{tenant_name}}. We received {{payment_amount}}. This is your balance: {{balance_after}}, and this is what is left for you to pay. By {{next_due_date}}, you need to pay it.",
-  };
-
-  await db.insert(reminderSettings).values(defaultTemplates);
-  const rows = await db.select().from(reminderSettings).limit(1);
-  return rows[0]!;
-}
-
-export async function updateReminderSettings(patch: Partial<InsertReminderSettings>) {
-  const db = await getDb();
-  if (!db) throw new Error("Database unavailable");
-  const current = await ensureReminderSettings();
-  await db.update(reminderSettings).set(patch).where(eq(reminderSettings.id, current.id));
-  return getReminderSettings();
-}
-
-// Overview stats
-export async function getDashboardOverview() {
-  const db = await getDb();
-  if (!db) {
-    return {
-      totalProperties: 0,
-      totalTenants: 0,
-      totalDebt: "0.00",
-      overdueTenantsCount: 0,
-      collectedThisMonth: "0.00",
-    };
-  }
-
-  const [propCount] = await db.select({ count: sql<number>`count(*)` }).from(properties);
-  const [tenantStats] = await db
-    .select({
-      count: sql<number>`count(*)`,
-      totalDebt: sql<string>`coalesce(sum(${tenants.currentBalance}), 0)`,
-      overdueCount: sql<number>`coalesce(sum(case when ${tenants.currentBalance} > 0 and ${tenants.status} = 'overdue' then 1 else 0 end), 0)`,
-    })
-    .from(tenants);
-
-  const [paymentStats] = await db
-    .select({
-      totalPaid: sql<string>`coalesce(sum(${payments.amount}), 0)`,
-    })
-    .from(payments);
-
-  return {
-    totalProperties: Number(propCount?.count || 0),
-    totalTenants: Number(tenantStats?.count || 0),
-    totalDebt: Number(tenantStats?.totalDebt || 0).toFixed(2),
-    overdueTenantsCount: Number(tenantStats?.overdueCount || 0),
-    collectedThisMonth: Number(paymentStats?.totalPaid || 0).toFixed(2),
-  };
-}
+export async function getDashboardOverview(db: Client) { const [props, tenants, payments] = await Promise.all([db.from("properties").select("id", { count: "exact", head: true }), db.from("tenants").select("current_balance,status"), db.from("payments").select("amount")]); if (props.error) throw new Error(props.error.message); const tenantRows = tenants.data ?? []; const paymentRows = payments.data ?? []; return { totalProperties: props.count ?? 0, totalTenants: tenantRows.length, totalDebt: tenantRows.reduce((s, r) => s + Number(r.current_balance), 0).toFixed(2), overdueTenantsCount: tenantRows.filter(r => Number(r.current_balance) > 0 && r.status === "overdue").length, collectedThisMonth: paymentRows.reduce((s, r) => s + Number(r.amount), 0).toFixed(2) }; }

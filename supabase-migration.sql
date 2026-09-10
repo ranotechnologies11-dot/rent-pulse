@@ -146,3 +146,28 @@ drop policy if exists "profiles self update" on public.profiles;
 create policy "profiles self read" on public.profiles for select to authenticated using (auth.uid() = id);
 create policy "profiles self insert" on public.profiles for insert to authenticated with check (auth.uid() = id);
 create policy "profiles self update" on public.profiles for update to authenticated using (auth.uid() = id) with check (auth.uid() = id);
+
+
+-- Landlord ownership and RLS isolation
+alter table public.properties add column if not exists owner_id uuid references auth.users(id) on delete cascade;
+alter table public.reminder_settings add column if not exists owner_id uuid references auth.users(id) on delete cascade;
+create index if not exists properties_owner_id_idx on public.properties(owner_id);
+create index if not exists reminder_settings_owner_id_idx on public.reminder_settings(owner_id);
+alter table public.properties enable row level security;
+alter table public.tenants enable row level security;
+alter table public.invoices enable row level security;
+alter table public.payments enable row level security;
+alter table public.reminder_logs enable row level security;
+alter table public.reminder_settings enable row level security;
+drop policy if exists "landlord properties" on public.properties;
+create policy "landlord properties" on public.properties for all to authenticated using (owner_id = auth.uid()) with check (owner_id = auth.uid());
+drop policy if exists "landlord tenants" on public.tenants;
+create policy "landlord tenants" on public.tenants for all to authenticated using (exists (select 1 from public.properties p where p.id = property_id and p.owner_id = auth.uid())) with check (exists (select 1 from public.properties p where p.id = property_id and p.owner_id = auth.uid()));
+drop policy if exists "landlord invoices" on public.invoices;
+create policy "landlord invoices" on public.invoices for all to authenticated using (exists (select 1 from public.tenants t join public.properties p on p.id = t.property_id where t.id = tenant_id and p.owner_id = auth.uid())) with check (exists (select 1 from public.tenants t join public.properties p on p.id = t.property_id where t.id = tenant_id and p.owner_id = auth.uid()));
+drop policy if exists "landlord payments" on public.payments;
+create policy "landlord payments" on public.payments for all to authenticated using (exists (select 1 from public.tenants t join public.properties p on p.id = t.property_id where t.id = tenant_id and p.owner_id = auth.uid())) with check (exists (select 1 from public.tenants t join public.properties p on p.id = t.property_id where t.id = tenant_id and p.owner_id = auth.uid()));
+drop policy if exists "landlord reminder logs" on public.reminder_logs;
+create policy "landlord reminder logs" on public.reminder_logs for all to authenticated using (exists (select 1 from public.tenants t join public.properties p on p.id = t.property_id where t.id = tenant_id and p.owner_id = auth.uid())) with check (exists (select 1 from public.tenants t join public.properties p on p.id = t.property_id where t.id = tenant_id and p.owner_id = auth.uid()));
+drop policy if exists "landlord reminder settings" on public.reminder_settings;
+create policy "landlord reminder settings" on public.reminder_settings for all to authenticated using (owner_id = auth.uid()) with check (owner_id = auth.uid());

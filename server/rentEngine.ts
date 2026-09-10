@@ -3,15 +3,14 @@ import {
   createInvoice,
   createReminderLog,
   ensureReminderSettings,
-  getDb,
+  listTenantsWithProperty,
   getTenantById,
   listInvoicesByTenant,
   recordPayment,
   updateInvoice,
   updateTenant,
 } from "./db";
-import { invoices, properties, tenants } from "../drizzle/schema";
-import { eq } from "drizzle-orm";
+import type { ServerSupabaseClient } from "./supabase";
 
 export function formatCurrency(amount: string | number, currency = "USD") {
   const num = typeof amount === "string" ? parseFloat(amount) : amount;
@@ -43,16 +42,13 @@ export function computeNextDueDate(dueDayOfMonth: number, baseDate = new Date())
   return new Date(year, month + 1, dueDayOfMonth, 12, 0, 0);
 }
 
-export async function processTenantPayment(params: {
+export async function processTenantPayment(db: ServerSupabaseClient, params: {
   tenantId: number;
   amount: number;
   paymentMethod?: string;
   referenceNumber?: string;
 }) {
-  const db = await getDb();
-  if (!db) throw new Error("Database unavailable");
-
-  const record = await getTenantById(params.tenantId);
+  const record = await getTenantById(db, params.tenantId);
   if (!record) throw new Error("Tenant not found");
   const { tenant, property } = record;
 
@@ -92,7 +88,7 @@ export async function processTenantPayment(params: {
   })`;
 
   // Save payment record
-  const paymentId = await recordPayment({
+  const paymentId = await recordPayment(db, {
     tenantId: tenant.id,
     amount: paymentAmount.toFixed(2),
     paymentMethod: params.paymentMethod || "bank_transfer",
@@ -103,7 +99,7 @@ export async function processTenantPayment(params: {
   });
 
   // Apply to existing open invoices
-  const openInvoices = await listInvoicesByTenant(tenant.id);
+  const openInvoices = await listInvoicesByTenant(db, tenant.id);
   let remainingCredit = paymentAmount;
   for (const inv of openInvoices) {
     if (remainingCredit <= 0) break;
@@ -114,7 +110,7 @@ export async function processTenantPayment(params: {
       const settle = Math.min(remainingCredit, invOwed);
       const updatedPaid = invPaid + settle;
       remainingCredit -= settle;
-      await updateInvoice(inv.id, {
+      await updateInvoice(db, inv.id, {
         amountPaid: updatedPaid.toFixed(2),
         status: updatedPaid >= invDue ? "paid" : "partially_paid",
       });
@@ -122,13 +118,13 @@ export async function processTenantPayment(params: {
   }
 
   // Update tenant balance and status
-  await updateTenant(tenant.id, {
+  await updateTenant(db, tenant.id, {
     currentBalance: newBalance.toFixed(2),
     status: nextStatus,
   });
 
   // Dispatch payment receipt reminder log
-  await createReminderLog({
+  await createReminderLog(db, {
     tenantId: tenant.id,
     triggerType: "payment_receipt",
     channel: tenant.reminderChannel === "email" ? "email" : "sms",
@@ -154,16 +150,16 @@ export async function processTenantPayment(params: {
   };
 }
 
-export async function sendManualReminder(params: {
+export async function sendManualReminder(db: ServerSupabaseClient, params: {
   tenantId: number;
   triggerType?: "approaching" | "due_today" | "overdue" | "manual";
   customMessage?: string;
   channel?: "sms" | "email";
 }) {
-  const record = await getTenantById(params.tenantId);
+  const record = await getTenantById(db, params.tenantId);
   if (!record) throw new Error("Tenant not found");
   const { tenant, property } = record;
-  const settings = await ensureReminderSettings();
+  const settings = await ensureReminderSettings(db);
 
   const nextDue = computeNextDueDate(tenant.dueDayOfMonth, new Date());
   const dueDateStr = format(nextDue, "MMMM d, yyyy");
@@ -197,7 +193,7 @@ export async function sendManualReminder(params: {
       ? `Overdue Notice: ${balanceStr} balance for Unit ${tenant.unitNumber}`
       : `Upcoming Rent Reminder: Due on ${dueDateStr}`;
 
-  const logId = await createReminderLog({
+  const logId = await createReminderLog(db, {
     tenantId: tenant.id,
     triggerType,
     channel,
@@ -220,18 +216,9 @@ export async function sendManualReminder(params: {
   };
 }
 
-export async function runAutomatedReminderCheck(triggerSource = "manual_or_cron") {
-  const db = await getDb();
-  if (!db) return { processed: 0, sent: 0, details: [] };
-
-  const settings = await ensureReminderSettings();
-  const allTenants = await db
-    .select({
-      tenant: tenants,
-      property: properties,
-    })
-    .from(tenants)
-    .innerJoin(properties, eq(tenants.propertyId, properties.id));
+export async function runAutomatedReminderCheck(db: ServerSupabaseClient, triggerSource = "manual_or_cron") {
+  const settings = await ensureReminderSettings(db);
+  const allTenants = (await listTenantsWithProperty(db)).map((tenant: any) => ({ tenant, property: { name: tenant.propertyName, currency: tenant.currency ?? "USD", managerPhone: tenant.managerPhone } }));
 
   const now = new Date();
   const currentDay = now.getDate();
@@ -301,7 +288,7 @@ export async function runAutomatedReminderCheck(triggerSource = "manual_or_cron"
           : `[Auto Alert] Rent Due Soon: ${format(nextDue, "MMM d")}`;
 
       const channel = tenant.reminderChannel === "email" ? "email" : "sms";
-      await createReminderLog({
+      await createReminderLog(db, {
         tenantId: tenant.id,
         triggerType: targetType,
         channel,
