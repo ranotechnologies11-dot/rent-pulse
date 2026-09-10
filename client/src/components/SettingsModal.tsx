@@ -14,7 +14,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { Settings, Sliders, Sparkles } from "lucide-react";
+import { Settings, Sliders, Sparkles, Moon, Sun, Smartphone } from "lucide-react";
+import { useTheme } from "@/contexts/ThemeContext";
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -22,8 +23,12 @@ interface SettingsModalProps {
 }
 
 export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
+  const { theme, setTheme } = useTheme();
   const { data: currentSettings, isLoading } = trpc.settings.get.useQuery(undefined, {
     enabled: isOpen,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 15 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 
   const [daysBefore, setDaysBefore] = useState("3");
@@ -93,6 +98,13 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4 py-2">
+            <div className="rounded-xl border border-border bg-muted/30 p-3.5">
+              <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-foreground"><Sliders className="h-4 w-4 text-primary" />Display theme</div>
+              <div className="flex flex-wrap gap-2">
+                {(["light", "dark", "system"] as const).map(value => <Button key={value} type="button" size="sm" variant={theme === value ? "default" : "outline"} onClick={() => setTheme(value)} className="gap-1.5 capitalize">{value === "light" ? <Sun className="h-3.5 w-3.5" /> : value === "dark" ? <Moon className="h-3.5 w-3.5" /> : <Smartphone className="h-3.5 w-3.5" />}{value}</Button>)}
+              </div>
+              <p className="mt-2 text-[11px] text-muted-foreground">Changes apply immediately and are saved on this device.</p>
+            </div>
             <div className="p-3.5 rounded-xl bg-muted/40 border border-border space-y-3">
               <div className="flex items-center justify-between">
                 <div>
