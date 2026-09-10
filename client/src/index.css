@@ -4,8 +4,8 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-  --font-display: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  --font-sans: 'DM Sans', system-ui, -apple-system, sans-serif;
+  --font-display: 'Manrope', system-ui, -apple-system, sans-serif;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -44,8 +44,8 @@
   --primary-foreground: oklch(0.99 0.01 188);
   --sidebar-primary: oklch(0.38 0.12 188);
   --sidebar-primary-foreground: oklch(0.99 0.01 188);
-  --radius: 0.75rem;
-  --background: oklch(0.985 0.005 210);
+  --radius: 0.8rem;
+  --background: oklch(0.975 0.008 165);
   --foreground: oklch(0.2 0.03 220);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.2 0.03 220);
@@ -118,6 +118,9 @@
   button, a, input, select, textarea {
     touch-action: manipulation;
   }
+  button, a, [role="button"] { transition: color 160ms ease, background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease; }
+  button:active:not(:disabled), [role="button"]:active { transform: scale(.98); }
+  :focus-visible { outline: 3px solid color-mix(in srgb, var(--ring) 35%, transparent); outline-offset: 2px; }
   button:not(:disabled),
   [role="button"]:not([aria-disabled="true"]),
   [type="button"]:not(:disabled),
@@ -129,6 +132,10 @@
   input[type="radio"]:not(:disabled) {
     @apply cursor-pointer;
   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
 }
 
 @media (max-width: 639px) {

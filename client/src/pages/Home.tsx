@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -33,7 +33,7 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [propertyFilter, setPropertyFilter] = useState("all");
-  const [activeNav, setActiveNav] = useState("Overview");
+  const [location] = useLocation();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [paymentTenant, setPaymentTenant] = useState<any>(null);
   const [remindTenant, setRemindTenant] = useState<any>(null);
@@ -113,7 +113,7 @@ export default function Home() {
           <div className="mt-9 px-3 text-[10px] font-bold uppercase tracking-[.18em] text-slate-400">Workspace</div>
           <nav className="mt-2 space-y-1">
             {navItems.map(({ label, href, icon: Icon }) => (
-              <Link key={label} href={href} onClick={() => setMobileNavOpen(false)} className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-[13px] font-semibold transition ${activeNav === label ? "bg-[#e6f3f0] text-[#0b645c]" : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"}`}>
+              <Link key={label} href={href} onClick={() => setMobileNavOpen(false)} className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-[13px] font-semibold transition ${location === href ? "bg-[#e6f3f0] text-[#0b645c]" : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"}`}>
                 <Icon className="h-[17px] w-[17px]" />
                 <span>{label}</span>
                 {label === "Progress" && <span className="ml-auto text-[10px] text-slate-400">analytics</span>}
@@ -147,7 +147,7 @@ export default function Home() {
           <div className="flex h-[72px] items-center justify-between px-4 sm:px-6 lg:px-9">
             <div className="flex items-center gap-3">
               <button className="lg:hidden" onClick={() => setMobileNavOpen(true)} aria-label="Open navigation"><Menu className="h-5 w-5" /></button>
-              <div><div className="text-[11px] font-semibold text-slate-400">Tuesday, September 8, 2026</div><h1 className="font-display text-xl font-bold tracking-tight sm:text-2xl">Good morning, {landlordName.split(" ")[0]} <span className="text-[#0b645c]">↗</span></h1></div>
+              <div><div className="text-[11px] font-semibold text-slate-400">{format(new Date(), "EEEE, MMMM d, yyyy")}</div><h1 className="font-display text-xl font-bold tracking-tight sm:text-2xl">Good morning, {landlordName.split(" ")[0]} <span className="text-[#0b645c]">↗</span></h1></div>
             </div>
             <div className="flex items-center gap-2 sm:gap-3">
               <Button variant="outline" size="sm" onClick={() => runBatchCheck.mutate()} disabled={runBatchCheck.isPending} className="hidden h-9 gap-2 border-slate-200 bg-white text-xs font-bold sm:flex"><RefreshCw className={`h-3.5 w-3.5 ${runBatchCheck.isPending ? "animate-spin" : ""}`} />Run auto-scan</Button>
@@ -183,7 +183,7 @@ export default function Home() {
             </div>
 
             {/* activity */}
-            <div className="min-w-0"><div className="flex items-end justify-between"><div><h3 className="font-display text-xl font-bold tracking-tight">Latest activity</h3><p className="mt-1 text-xs text-slate-500">A quiet record of every touchpoint.</p></div><button onClick={() => utils.reminders.listLogs.invalidate()} className="rounded-lg p-2 text-slate-400 hover:bg-white hover:text-slate-800"><RefreshCw className="h-4 w-4" /></button></div><div className="mt-4 rounded-2xl bg-white p-4 ring-1 ring-slate-200"><div className="space-y-4">{logsLoading ? <div className="py-12 text-center text-xs text-slate-400">Loading activity…</div> : recentLogs.length === 0 ? <div className="py-12 text-center text-xs text-slate-400">No notifications yet.</div> : recentLogs.slice(0, 6).map(log => { const receipt = log.triggerType === "payment_receipt"; return <div key={log.id} className="relative flex gap-3"><div className={`mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-lg ${receipt ? "bg-[#e7f4ee] text-[#238059]" : "bg-[#fff5e5] text-[#bd812e]"}`}>{receipt ? <Check className="h-4 w-4" /> : <Bell className="h-4 w-4" />}</div><div className="min-w-0 flex-1 border-b border-slate-100 pb-4"><div className="flex items-start justify-between gap-2"><div className="truncate text-xs font-bold text-slate-800">{receipt ? "Payment receipt sent" : "Rent reminder sent"}</div><div className="shrink-0 text-[10px] text-slate-400">{format(new Date(log.sentAt), "h:mm a")}</div></div><p className="mt-1 truncate text-[11px] text-slate-500">{log.tenantName} · Unit {log.unitNumber}</p><div className="mt-2 rounded-lg bg-slate-50 px-2.5 py-2 font-mono text-[10px] leading-4 text-slate-500">{log.messageBody}</div></div></div>; })}</div><button onClick={() => setActiveNav("Reminders")} className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-bold text-[#0b645c] hover:bg-[#edf7f4]">View all activity <ArrowUpRight className="h-3.5 w-3.5" /></button></div></div>
+            <div className="min-w-0"><div className="flex items-end justify-between"><div><h3 className="font-display text-xl font-bold tracking-tight">Latest activity</h3><p className="mt-1 text-xs text-slate-500">A quiet record of every touchpoint.</p></div><button onClick={() => utils.reminders.listLogs.invalidate()} className="rounded-lg p-2 text-slate-400 hover:bg-white hover:text-slate-800"><RefreshCw className="h-4 w-4" /></button></div><div className="mt-4 rounded-2xl bg-white p-4 ring-1 ring-slate-200"><div className="space-y-4">{logsLoading ? <div className="py-12 text-center text-xs text-slate-400">Loading activity…</div> : recentLogs.length === 0 ? <div className="py-12 text-center text-xs text-slate-400">No notifications yet.</div> : recentLogs.slice(0, 6).map(log => { const receipt = log.triggerType === "payment_receipt"; return <div key={log.id} className="relative flex gap-3"><div className={`mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-lg ${receipt ? "bg-[#e7f4ee] text-[#238059]" : "bg-[#fff5e5] text-[#bd812e]"}`}>{receipt ? <Check className="h-4 w-4" /> : <Bell className="h-4 w-4" />}</div><div className="min-w-0 flex-1 border-b border-slate-100 pb-4"><div className="flex items-start justify-between gap-2"><div className="truncate text-xs font-bold text-slate-800">{receipt ? "Payment receipt sent" : "Rent reminder sent"}</div><div className="shrink-0 text-[10px] text-slate-400">{format(new Date(log.sentAt), "h:mm a")}</div></div><p className="mt-1 truncate text-[11px] text-slate-500">{log.tenantName} · Unit {log.unitNumber}</p><div className="mt-2 rounded-lg bg-slate-50 px-2.5 py-2 font-mono text-[10px] leading-4 text-slate-500">{log.messageBody}</div></div></div>; })}</div><button onClick={() => toast.info("Activity history is available in the reminder logs.")} className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-bold text-[#0b645c] hover:bg-[#edf7f4]">View all activity <ArrowUpRight className="h-3.5 w-3.5" /></button></div></div>
           </section>
 
           <section className="mt-6 grid gap-4 xl:grid-cols-[1.35fr_.65fr]">
