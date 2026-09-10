@@ -167,8 +167,8 @@ export default function Home() {
 
           {/* stat cards */}
           <section className="mt-7 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <StatCard label="Total tenant debt" value={`$${totalDebt}`} helper={`${overdueCount} tenants have an amount due`} icon={<CircleDollarSign className="h-5 w-5" />} tone="warm" />
-            <StatCard label="Paid this cycle" value={`$${stats?.collectedThisMonth ?? "0.00"}`} helper="Payments recorded by landlord" icon={<CheckCircle2 className="h-5 w-5" />} tone="mint" />
+            <StatCard label="Total tenant debt" value={`KSh ${totalDebt}`} helper={`${overdueCount} tenants have an amount due`} icon={<CircleDollarSign className="h-5 w-5" />} tone="warm" />
+            <StatCard label="Paid this cycle" value={`KSh ${stats?.collectedThisMonth ?? "0.00"}`} helper="Payments recorded by landlord" icon={<CheckCircle2 className="h-5 w-5" />} tone="mint" />
             <StatCard label="Tenants tracked" value={String(stats?.totalTenants ?? 0)} helper={`${stats?.totalProperties ?? 0} properties in portfolio`} icon={<Users className="h-5 w-5" />} tone="cream" />
             <div className="relative overflow-hidden rounded-2xl bg-[#143e3a] p-5 text-white shadow-[0_12px_30px_rgba(20,62,58,.11)]"><div className="absolute -right-7 -top-7 h-28 w-28 rounded-full border-[18px] border-white/10" /><div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-[.14em] text-teal-100"><span>Automation health</span><Zap className="h-4 w-4 text-[#f5c96a]" /></div><div className="mt-3 flex items-baseline gap-2"><span className="font-display text-[25px] font-bold">Active</span><span className="h-2 w-2 rounded-full bg-[#f5c96a] shadow-[0_0_0_5px_rgba(245,201,106,.15)]" /></div><p className="mt-1 text-xs leading-5 text-teal-100/75">Daily due-date and overdue checks are running.</p></div>
           </section>

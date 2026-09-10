@@ -18,7 +18,7 @@ export const appRouter = router({
   dashboard: router({ stats: landlord.query(({ ctx }) => getDashboardOverview(ctx.supabase)) }),
   properties: router({
     list: landlord.query(({ ctx }) => listProperties(ctx.supabase)),
-    create: landlord.input(z.object({ name: z.string().min(2), address: z.string().min(3), city: z.string().default("Metropolis"), managerName: z.string().min(2), managerPhone: z.string().min(5), managerEmail: z.string().email(), currency: z.string().default("USD") })).mutation(({ ctx, input }) => createProperty(ctx.supabase, input, ctx.user.id)),
+    create: landlord.input(z.object({ name: z.string().min(2), address: z.string().min(3), city: z.string().default("Metropolis"), managerName: z.string().min(2), managerPhone: z.string().min(5), managerEmail: z.string().email(), currency: z.string().default("KSh") })).mutation(({ ctx, input }) => createProperty(ctx.supabase, input, ctx.user.id)),
   }),
   tenants: router({
     list: landlord.query(({ ctx }) => listTenantsWithProperty(ctx.supabase)),

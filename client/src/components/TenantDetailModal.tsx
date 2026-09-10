@@ -64,7 +64,7 @@ export function TenantDetailModal({
                 className="text-xs px-2.5 py-0.5"
               >
                 {parseFloat(tenant.currentBalance) > 0
-                  ? `Debt: $${tenant.currentBalance}`
+                  ? `Debt: KSh ${tenant.currentBalance}`
                   : "All Rent Settled"}
               </Badge>
             )}
@@ -93,7 +93,7 @@ export function TenantDetailModal({
               <div>
                 <span className="text-xs text-muted-foreground block">Monthly Rent</span>
                 <span className="text-sm font-semibold text-foreground block mt-0.5">
-                  ${tenant.rentAmount} / mo
+                  KSh {tenant.rentAmount} / mo
                 </span>
                 <span className="text-xs text-muted-foreground block">
                   Due on Day {tenant.dueDayOfMonth}
@@ -109,7 +109,7 @@ export function TenantDetailModal({
                       : "text-emerald-600"
                   }`}
                 >
-                  ${tenant.currentBalance}
+                  KSh {tenant.currentBalance}
                 </span>
                 <span className="text-xs text-muted-foreground block capitalize">
                   Status: {tenant.status}
@@ -197,14 +197,14 @@ export function TenantDetailModal({
                           <div className="flex items-center gap-2">
                             <CreditCard className="w-3.5 h-3.5 text-emerald-600" />
                             <span className="font-bold text-foreground">
-                              +${p.amount}
+                              +KSh {p.amount}
                             </span>
                             <span className="text-muted-foreground capitalize">
                               ({p.paymentMethod.replace("_", " ")})
                             </span>
                           </div>
                           <p className="text-muted-foreground text-[11px]">
-                            Remaining balance after payment: ${p.balanceAfterPayment}
+                            Remaining balance after payment: KSh {p.balanceAfterPayment}
                           </p>
                         </div>
                         <div className="text-right text-muted-foreground">
@@ -243,7 +243,7 @@ export function TenantDetailModal({
                         </div>
                         <div className="text-right">
                           <span className="font-bold text-foreground block">
-                            ${inv.amountDue}
+                            KSh {inv.amountDue}
                           </span>
                           <Badge
                             variant={inv.status === "paid" ? "outline" : "destructive"}

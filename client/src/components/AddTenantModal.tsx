@@ -181,7 +181,7 @@ export function AddTenantModal({
 
           <div className="grid grid-cols-3 gap-3">
             <div className="space-y-1">
-              <Label className="text-xs font-semibold">Monthly Rent ($)</Label>
+              <Label className="text-xs font-semibold">Monthly Rent (KSh)</Label>
               <Input
                 type="number"
                 step="0.01"
@@ -205,7 +205,7 @@ export function AddTenantModal({
             </div>
 
             <div className="space-y-1">
-              <Label className="text-xs font-semibold">Initial Debt ($)</Label>
+              <Label className="text-xs font-semibold">Initial Debt (KSh)</Label>
               <Input
                 type="number"
                 step="0.01"

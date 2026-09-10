@@ -68,7 +68,7 @@ export function AddPaymentModal({ isOpen, onClose, tenants }: AddPaymentModalPro
                 <SelectItem key={tenant.id} value={String(tenant.id)}>
                   <span className="flex items-center gap-2">
                     <UserRound className="h-3.5 w-3.5 text-slate-400" />
-                    {tenant.fullName} · Unit {tenant.unitNumber} · ${tenant.currentBalance} due
+                    {tenant.fullName} · Unit {tenant.unitNumber} · KSh {tenant.currentBalance} due
                   </span>
                 </SelectItem>
               ))}

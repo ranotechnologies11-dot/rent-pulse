@@ -100,7 +100,7 @@ export function SendReminderModal({
           <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50 border border-border text-xs">
             <div>
               <span className="text-muted-foreground block">Amount to remind</span>
-              <span className="text-sm font-bold text-rose-600">${tenant.currentBalance}</span>
+              <span className="text-sm font-bold text-rose-600">KSh {tenant.currentBalance}</span>
             </div>
             <div>
               <span className="text-muted-foreground block">Phone</span>
@@ -173,7 +173,7 @@ export function SendReminderModal({
             className="gap-2"
           >
             <Send className="w-4 h-4" />
-            {sendReminder.isPending ? "Sending..." : `Send $${tenant.currentBalance} Reminder`}
+            {sendReminder.isPending ? "Sending..." : `Send KSh ${tenant.currentBalance} Reminder`}
           </Button>
         </DialogFooter>
       </DialogContent>

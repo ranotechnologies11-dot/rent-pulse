@@ -20,7 +20,7 @@ create table if not exists public.properties (
   manager_name text not null default 'Property Desk',
   manager_phone text not null default '+1 (555) 019-2834',
   manager_email text not null default 'billing@rentpulse.local',
-  currency text not null default 'USD',
+  currency text not null default 'KSh',
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );

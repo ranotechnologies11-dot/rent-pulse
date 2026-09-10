@@ -122,10 +122,10 @@ export function PaymentModal({ isOpen, onClose, tenant, onSuccess }: PaymentModa
               <CheckCircle2 className="w-5 h-5 text-emerald-600 mt-0.5 shrink-0" />
               <div className="space-y-1 text-sm">
                 <p className="font-semibold text-emerald-900 dark:text-emerald-200">
-                  Payment of ${receiptResult.paymentAmount} processed successfully!
+                  Payment of KSh {receiptResult.paymentAmount} processed successfully!
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  Updated outstanding debt: <span className="font-bold text-foreground">${receiptResult.newBalance}</span> (Previously: ${receiptResult.previousBalance})
+                  Updated outstanding debt: <span className="font-bold text-foreground">KSh {receiptResult.newBalance}</span> (Previously: KSh {receiptResult.previousBalance})
                 </p>
               </div>
             </div>
@@ -158,12 +158,12 @@ export function PaymentModal({ isOpen, onClose, tenant, onSuccess }: PaymentModa
             <div className="grid grid-cols-2 gap-3 p-3.5 rounded-xl bg-muted/40 border border-border">
               <div>
                 <span className="text-xs text-muted-foreground">Monthly Rent</span>
-                <p className="text-base font-bold text-foreground">${tenant.rentAmount}</p>
+                <p className="text-base font-bold text-foreground">KSh {tenant.rentAmount}</p>
               </div>
               <div>
                 <span className="text-xs text-muted-foreground">Current Tenant Debt</span>
                 <p className={`text-base font-bold ${parseFloat(tenant.currentBalance) > 0 ? "text-rose-600 dark:text-rose-400" : "text-emerald-600"}`}>
-                  ${tenant.currentBalance}
+                  KSh {tenant.currentBalance}
                 </p>
               </div>
             </div>
@@ -171,7 +171,7 @@ export function PaymentModal({ isOpen, onClose, tenant, onSuccess }: PaymentModa
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
                 <Label htmlFor="payment-amount" className="text-xs font-semibold">
-                  Amount Received from Tenant ($)
+                  Amount Received from Tenant (KSh)
                 </Label>
                 {parseFloat(tenant.currentBalance) > 0 && (
                   <button
@@ -179,7 +179,7 @@ export function PaymentModal({ isOpen, onClose, tenant, onSuccess }: PaymentModa
                     onClick={handlePayFull}
                     className="text-xs text-primary hover:underline font-medium"
                   >
-                    Record full debt (${tenant.currentBalance})
+                    Record full debt (KSh {tenant.currentBalance})
                   </button>
                 )}
               </div>
@@ -231,7 +231,7 @@ export function PaymentModal({ isOpen, onClose, tenant, onSuccess }: PaymentModa
             <div className="text-xs text-muted-foreground bg-accent/40 border border-accent/60 p-3 rounded-lg flex items-center gap-2">
               <ShieldAlert className="w-4 h-4 text-primary shrink-0" />
               <span>
-                This landlord entry subtracts the amount received from the tenant's current debt. A $0 balance is marked PAID; a partial amount leaves the new balance outstanding.
+                This landlord entry subtracts the amount received from the tenant's current debt. A KSh 0 balance is marked PAID; a partial amount leaves the new balance outstanding.
               </span>
             </div>
 
