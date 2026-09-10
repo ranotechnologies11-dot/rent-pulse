@@ -12,6 +12,7 @@ import { TenantDetailModal } from "@/components/TenantDetailModal";
 import { AddTenantModal } from "@/components/AddTenantModal";
 import { SettingsModal } from "@/components/SettingsModal";
 import { toast } from "sonner";
+import { useAuth } from "@/_core/hooks/useAuth";
 import { format } from "date-fns";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import {
@@ -40,6 +41,9 @@ export default function Home() {
   const [isAddTenantOpen, setIsAddTenantOpen] = useState(false);
   const [isAddPaymentOpen, setIsAddPaymentOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const { user } = useAuth();
+  const landlordName = user?.name ?? "Landlord";
+  const landlordInitials = landlordName.split(" ").filter(Boolean).slice(0, 2).map(part => part[0]).join("").toUpperCase() || "RP";
 
   const utils = trpc.useUtils();
   const { data: stats, isLoading: statsLoading } = trpc.dashboard.stats.useQuery();
@@ -129,8 +133,8 @@ export default function Home() {
             <button onClick={() => setIsSettingsOpen(true)} className="mt-3 text-xs font-bold text-white underline underline-offset-4">Tune reminder rules</button>
           </div>
           <div className="mt-4 flex items-center gap-3 border-t border-slate-100 px-2 pt-4">
-            <div className="grid h-8 w-8 place-items-center rounded-full bg-[#f4e8d4] text-xs font-bold text-[#9a6b2d]">MV</div>
-            <div className="min-w-0"><div className="truncate text-xs font-bold">Marcus Vance</div><div className="truncate text-[10px] text-slate-400">Property manager</div></div>
+            <div className="grid h-8 w-8 place-items-center rounded-full bg-[#f4e8d4] text-xs font-bold text-[#9a6b2d]">{landlordInitials}</div>
+            <div className="min-w-0"><div className="truncate text-xs font-bold">{landlordName}</div><div className="truncate text-[10px] text-slate-400">Property manager</div></div>
             <button onClick={() => toast.info("Profile menu coming next")} className="ml-auto"><MoreHorizontal className="h-4 w-4 text-slate-400" /></button>
           </div>
         </div>
@@ -143,7 +147,7 @@ export default function Home() {
           <div className="flex h-[72px] items-center justify-between px-4 sm:px-6 lg:px-9">
             <div className="flex items-center gap-3">
               <button className="lg:hidden" onClick={() => setMobileNavOpen(true)} aria-label="Open navigation"><Menu className="h-5 w-5" /></button>
-              <div><div className="text-[11px] font-semibold text-slate-400">Tuesday, September 8, 2026</div><h1 className="font-display text-xl font-bold tracking-tight sm:text-2xl">Good morning, Marcus <span className="text-[#0b645c]">↗</span></h1></div>
+              <div><div className="text-[11px] font-semibold text-slate-400">Tuesday, September 8, 2026</div><h1 className="font-display text-xl font-bold tracking-tight sm:text-2xl">Good morning, {landlordName.split(" ")[0]} <span className="text-[#0b645c]">↗</span></h1></div>
             </div>
             <div className="flex items-center gap-2 sm:gap-3">
               <Button variant="outline" size="sm" onClick={() => runBatchCheck.mutate()} disabled={runBatchCheck.isPending} className="hidden h-9 gap-2 border-slate-200 bg-white text-xs font-bold sm:flex"><RefreshCw className={`h-3.5 w-3.5 ${runBatchCheck.isPending ? "animate-spin" : ""}`} />Run auto-scan</Button>
