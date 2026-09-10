@@ -10,6 +10,7 @@ import Home from "./pages/Home";
 import Progress from "./pages/Progress";
 import Profile from "./pages/Profile";
 import Reports from "./pages/Reports";
+import PWAInstallPrompt from "./components/PWAInstallPrompt";
 
 function Router() {
   const { loading, isAuthenticated } = useAuth();
@@ -35,6 +36,7 @@ function App() {
       <ThemeProvider defaultTheme="system" switchable>
         <TooltipProvider>
           <Toaster />
+          <PWAInstallPrompt />
           <Router />
         </TooltipProvider>
       </ThemeProvider>
