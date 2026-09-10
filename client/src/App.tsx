@@ -14,7 +14,7 @@ import Reports from "./pages/Reports";
 function Router() {
   const { loading, isAuthenticated } = useAuth();
   const [location] = useLocation();
-  if (location === "/auth") return isAuthenticated ? <Home /> : <Auth />;
+  if (location === "/auth") return <Auth />;
   if (loading) return <div className="grid min-h-screen place-items-center bg-background text-sm text-muted-foreground">Loading your secure workspace…</div>;
   if (!isAuthenticated) return <Auth />;
   return (

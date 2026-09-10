@@ -4,5 +4,11 @@
   "installCommand": "pnpm install --frozen-lockfile",
   "outputDirectory": "dist/public",
   "cleanUrls": true,
-  "trailingSlash": false
+  "trailingSlash": false,
+  "rewrites": [
+    { "source": "/auth", "destination": "/index.html" },
+    { "source": "/progress", "destination": "/index.html" },
+    { "source": "/reports", "destination": "/index.html" },
+    { "source": "/profile", "destination": "/index.html" }
+  ]
 }
