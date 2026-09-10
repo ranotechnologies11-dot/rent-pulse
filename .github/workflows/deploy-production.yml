@@ -32,9 +32,5 @@ jobs:
         run: pnpm test
       - name: Build
         run: pnpm build
-      - name: Deploy to Vercel production
-        run: pnpm dlx vercel deploy --prod --yes --token "$VERCEL_TOKEN" --scope "$VERCEL_ORG_ID"
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      - name: Confirm Vercel deployment handoff
+        run: echo "Validation passed; the connected Vercel Git integration deploys this commit to production."
