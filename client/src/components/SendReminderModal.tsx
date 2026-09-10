@@ -43,6 +43,7 @@ export function SendReminderModal({
   tenant,
   onSuccess,
 }: SendReminderModalProps) {
+  const messagingConnected = false;
   const [triggerType, setTriggerType] = useState<
     "approaching" | "due_today" | "overdue" | "manual"
   >("approaching");
@@ -73,6 +74,10 @@ export function SendReminderModal({
 
   const handleSend = () => {
     if (!tenant) return;
+    if (!messagingConnected) {
+      toast.info("Messaging integrations are not connected yet. The balance remains available for manual follow-up.");
+      return;
+    }
     sendReminder.mutate({
       tenantId: tenant.id,
       triggerType,
@@ -89,10 +94,10 @@ export function SendReminderModal({
         <DialogHeader>
           <DialogTitle className="text-lg font-bold font-display flex items-center gap-2">
             <BellRing className="w-5 h-5 text-primary" />
-            Dispatch Tenant Rent Reminder
+            Prepare Tenant Rent Reminder
           </DialogTitle>
           <DialogDescription>
-            Send an instant payment reminder to {tenant.fullName} (Unit {tenant.unitNumber}) with the exact amount they still owe.
+            Prepare the exact outstanding balance for {tenant.fullName} (Unit {tenant.unitNumber}). SMS and email delivery will be connected later.
           </DialogDescription>
         </DialogHeader>
 
@@ -169,11 +174,11 @@ export function SendReminderModal({
           </Button>
           <Button
             onClick={handleSend}
-            disabled={sendReminder.isPending}
+            disabled={!messagingConnected || sendReminder.isPending}
             className="gap-2"
           >
             <Send className="w-4 h-4" />
-            {sendReminder.isPending ? "Sending..." : `Send KSh ${tenant.currentBalance} Reminder`}
+            {messagingConnected ? (sendReminder.isPending ? "Sending..." : `Send KSh ${tenant.currentBalance} Reminder`) : "Messaging not connected"}
           </Button>
         </DialogFooter>
       </DialogContent>

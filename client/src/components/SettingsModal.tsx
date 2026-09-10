@@ -80,10 +80,10 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
         <DialogHeader>
           <DialogTitle className="text-xl font-bold font-display flex items-center gap-2">
             <Settings className="w-5 h-5 text-primary" />
-            Automated Reminder & Receipt Settings
+            Rent Tracking & Reminder Settings
           </DialogTitle>
           <DialogDescription>
-            Configure timing rules and custom message templates for approaching rent, overdue notices, and payment receipts.
+            Configure rent timing rules and prepare reminder text. SMS and email delivery are not connected yet.
           </DialogDescription>
         </DialogHeader>
 
@@ -97,15 +97,16 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               <div className="flex items-center justify-between">
                 <div>
                   <span className="text-sm font-semibold text-foreground block">
-                    Automatic Notification Engine
+                    Messaging integrations
                   </span>
                   <span className="text-xs text-muted-foreground">
-                    Send automated approaching and overdue messages to eligible tenants
+                    Not connected yet — RentPulse currently records balances and prepares follow-up details only.
                   </span>
                 </div>
                 <Switch
                   checked={autoDispatch}
                   onCheckedChange={setAutoDispatch}
+                  disabled
                 />
               </div>
 

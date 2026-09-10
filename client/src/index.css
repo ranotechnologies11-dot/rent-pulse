@@ -134,6 +134,17 @@
   }
 }
 
+#root:empty::before {
+  content: "Loading RentPulse…";
+  display: grid;
+  min-height: 100dvh;
+  place-items: center;
+  background: #f4f8f6;
+  color: #0b645c;
+  font: 700 14px/1.2 'DM Sans', system-ui, sans-serif;
+  letter-spacing: .04em;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
 }
