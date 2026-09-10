@@ -1,5 +1,5 @@
 {
-  "name": "RentPulse — Landlord Payment Tracker",
+  "name": "RentPulse — Landlord rent operations",
   "short_name": "RentPulse",
   "description": "Track tenant payments, balances, and rent reminders from one landlord workspace.",
   "start_url": "/",
@@ -10,9 +10,9 @@
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/icons/rentpulse.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "/icons/rentpulse-mark.png",
+      "sizes": "1920x1920",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ]

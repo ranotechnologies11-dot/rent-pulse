@@ -25,7 +25,7 @@ import {
 const navItems = [
   { label: "Overview", href: "/", icon: LayoutDashboard },
   { label: "Progress", href: "/progress", icon: WalletCards },
-  { label: "PDF reports", href: "/reports", icon: FileText },
+  { label: "Financial reports", href: "/reports", icon: FileText },
   { label: "Profile", href: "/profile", icon: UserCircle },
 ];
 
@@ -102,7 +102,7 @@ export default function Home() {
       <aside className={`${mobileNavOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"} fixed lg:sticky top-0 z-40 h-screen w-[252px] shrink-0 border-r border-slate-200 bg-white px-4 py-5 transition-transform duration-200`}>
         <div className="flex h-full flex-col">
           <div className="flex items-center gap-3 px-3">
-            <div className="grid h-10 w-10 place-items-center rounded-[13px] bg-[#0b645c] text-sm font-extrabold text-white shadow-[0_8px_20px_rgba(11,100,92,.18)]">RP</div>
+            <div className="grid h-10 w-10 place-items-center rounded-[13px] bg-[#0b645c] p-1.5 shadow-[0_8px_20px_rgba(11,100,92,.18)]"><img src="/icons/rentpulse-mark.png" alt="RentPulse logo" className="h-full w-full object-contain" /></div>
             <div>
               <div className="font-display text-[17px] font-bold tracking-tight">RentPulse</div>
               <div className="text-[10px] font-semibold uppercase tracking-[.18em] text-slate-400">Rent operations</div>
