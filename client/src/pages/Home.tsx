@@ -147,17 +147,20 @@ export default function Home() {
       {mobileNavOpen && <button className="fixed inset-0 z-30 bg-slate-950/20 lg:hidden" onClick={() => setMobileNavOpen(false)} aria-label="Close navigation overlay" />}
 
       <main className="min-w-0 flex-1">
-        <header className="sticky top-0 z-20 border-b border-slate-200/80 bg-[#f6f8f8]/90 backdrop-blur-xl">
-          <div className="flex h-[72px] items-center justify-between px-4 sm:px-6 lg:px-9">
-            <div className="flex items-center gap-3">
-              <button className="lg:hidden" onClick={() => setMobileNavOpen(true)} aria-label="Open navigation"><Menu className="h-5 w-5" /></button>
-              <div><div className="text-[11px] font-semibold text-slate-400">{format(new Date(), "EEEE, MMMM d, yyyy")}</div><h1 className="font-display text-xl font-bold tracking-tight sm:text-2xl">Good morning, {landlordName.split(" ")[0]} <span className="text-[#0b645c]">↗</span></h1></div>
+        <header className="sticky top-0 z-20 border-b border-[#29514d] bg-[#102c2a] text-white shadow-[0_10px_30px_rgba(10,45,42,.12)] dark:border-[#284541] dark:bg-[#0b1c1b]">
+          <div className="mx-auto flex min-h-[78px] max-w-[1400px] items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-9">
+            <div className="flex min-w-0 items-center gap-3">
+              <button className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-white/15 bg-white/10 text-[#d5f1eb] transition hover:bg-white/15 lg:hidden" onClick={() => setMobileNavOpen(true)} aria-label="Open navigation"><Menu className="h-4 w-4" /></button>
+              <div className="min-w-0">
+                <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.16em] text-[#9dc9c0] sm:text-[11px]"><span className="hidden h-1.5 w-1.5 rounded-full bg-[#f5c96a] sm:block" />{format(new Date(), "EEEE, MMMM d, yyyy")}</div>
+                <h1 className="mt-1 truncate font-display text-[19px] font-bold tracking-[-.03em] text-white sm:text-[25px]">Good morning, {landlordName.split(" ")[0]} <span className="text-[#f5c96a]">↗</span></h1>
+              </div>
             </div>
-            <div className="flex items-center gap-2 sm:gap-3">
-              <Button variant="outline" size="sm" onClick={() => runBatchCheck.mutate()} disabled={runBatchCheck.isPending} className="hidden h-9 gap-2 border-slate-200 bg-white text-xs font-bold sm:flex"><RefreshCw className={`h-3.5 w-3.5 ${runBatchCheck.isPending ? "animate-spin" : ""}`} />Run auto-scan</Button>
-              <Button variant="outline" size="sm" onClick={() => window.print()} className="hidden h-9 gap-1.5 border-slate-200 bg-white text-xs font-bold md:flex"><ArrowUpRight className="h-3.5 w-3.5" />Export PDF</Button>
-              <Button variant="outline" size="sm" onClick={() => setIsAddPaymentOpen(true)} className="hidden h-9 gap-1.5 border-[#b9dcd6] bg-white text-xs font-bold text-[#0b645c] sm:flex"><CreditCard className="h-3.5 w-3.5" />Add payment</Button>
-              <Button size="sm" onClick={() => setIsAddTenantOpen(true)} className="h-9 gap-1.5 bg-[#0b645c] text-xs font-bold shadow-[0_7px_15px_rgba(11,100,92,.18)] hover:bg-[#09564f]"><Plus className="h-3.5 w-3.5" />Add tenant</Button>
+            <div className="flex shrink-0 items-center gap-2 sm:gap-2.5">
+              <Button variant="outline" size="sm" onClick={() => runBatchCheck.mutate()} disabled={runBatchCheck.isPending} className="hidden h-9 gap-2 border-white/15 bg-white/10 text-xs font-bold text-white hover:bg-white/15 hover:text-white sm:flex"><RefreshCw className={`h-3.5 w-3.5 text-[#9dc9c0] ${runBatchCheck.isPending ? "animate-spin" : ""}`} />Run auto-scan</Button>
+              <Button variant="outline" size="sm" onClick={() => window.print()} className="hidden h-9 gap-1.5 border-white/15 bg-white/10 text-xs font-bold text-white hover:bg-white/15 hover:text-white md:flex"><ArrowUpRight className="h-3.5 w-3.5 text-[#9dc9c0]" />Export PDF</Button>
+              <Button variant="outline" size="sm" onClick={() => setIsAddPaymentOpen(true)} className="hidden h-9 gap-1.5 border-[#6ab7aa]/40 bg-[#1b4d48] text-xs font-bold text-[#d5f1eb] hover:bg-[#246158] hover:text-white sm:flex"><CreditCard className="h-3.5 w-3.5" />Add payment</Button>
+              <Button size="sm" onClick={() => setIsAddTenantOpen(true)} className="h-9 gap-1.5 bg-[#f5c96a] text-xs font-bold text-[#193b38] shadow-[0_7px_15px_rgba(245,201,106,.18)] hover:bg-[#ffd985]"><Plus className="h-3.5 w-3.5" /><span className="hidden sm:inline">Add tenant</span><span className="sm:hidden">Add</span></Button>
             </div>
           </div>
         </header>
