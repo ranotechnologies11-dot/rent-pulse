@@ -162,6 +162,11 @@ export default function Home() {
           </div>
         </header>
 
+        <div className="border-b border-slate-200/70 bg-white/55 px-4 py-2.5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.03] sm:px-6 lg:px-9">
+          <nav className="flex max-w-full items-center gap-1 overflow-x-auto" aria-label="Workspace views">
+            {navItems.map(({ label, href, icon: Icon }) => <Link key={href} href={href} className={`flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-[11px] font-bold transition ${location === href ? "bg-[#0b645c] text-white shadow-[0_6px_14px_rgba(11,100,92,.18)]" : "text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-white"}`}><Icon className="h-3.5 w-3.5" />{label}</Link>)}
+          </nav>
+        </div>
         <div className="px-4 py-6 sm:px-6 lg:px-9 lg:py-8">
           {/* overview header */}
           <section className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
@@ -171,8 +176,8 @@ export default function Home() {
 
           {/* stat cards */}
           <section className="mt-7 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <StatCard label="Total tenant debt" value={`KSh {totalDebt}`} helper={`${overdueCount} tenants have an amount due`} icon={<CircleDollarSign className="h-5 w-5" />} tone="warm" />
-            <StatCard label="Paid this cycle" value={`KSh {stats?.collectedThisMonth ?? "0.00"}`} helper="Payments recorded by landlord" icon={<CheckCircle2 className="h-5 w-5" />} tone="mint" />
+            <StatCard label="Total tenant debt" value={`KSh ${totalDebt}`} helper={`${overdueCount} tenants have an amount due`} icon={<CircleDollarSign className="h-5 w-5" />} tone="warm" />
+            <StatCard label="Paid this cycle" value={`KSh ${stats?.collectedThisMonth ?? "0.00"}`} helper="Payments recorded by landlord" icon={<CheckCircle2 className="h-5 w-5" />} tone="mint" />
             <StatCard label="Tenants tracked" value={String(stats?.totalTenants ?? 0)} helper={`${stats?.totalProperties ?? 0} properties in portfolio`} icon={<Users className="h-5 w-5" />} tone="cream" />
             <div className="relative overflow-hidden rounded-2xl bg-[#143e3a] p-5 text-white shadow-[0_12px_30px_rgba(20,62,58,.11)]"><div className="absolute -right-7 -top-7 h-28 w-28 rounded-full border-[18px] border-white/10" /><div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-[.14em] text-teal-100"><span>Automation health</span><Zap className="h-4 w-4 text-[#f5c96a]" /></div><div className="mt-3 flex items-baseline gap-2"><span className="font-display text-[25px] font-bold">Active</span><span className="h-2 w-2 rounded-full bg-[#f5c96a] shadow-[0_0_0_5px_rgba(245,201,106,.15)]" /></div><p className="mt-1 text-xs leading-5 text-teal-100/75">Daily due-date and overdue checks are running.</p></div>
           </section>
@@ -193,7 +198,7 @@ export default function Home() {
           <section className="mt-6 grid gap-4 xl:grid-cols-[1.35fr_.65fr]">
             <div className="rounded-2xl bg-white p-5 ring-1 ring-slate-200">
               <div className="flex items-start justify-between"><div><h3 className="font-display text-lg font-bold tracking-tight">Monthly collection trend</h3><p className="mt-1 text-xs text-slate-500">Recorded landlord payments by month</p></div><div className="rounded-lg bg-[#e7f4ee] px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-[#238059]">Recorded currency</div></div>
-              <div className="mt-5 h-[210px] w-full"><ResponsiveContainer width="100%" height="100%"><BarChart data={paymentTrend} margin={{ top: 4, right: 4, left: -18, bottom: 0 }}><CartesianGrid vertical={false} stroke="#edf1f1" /><XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "#94a3b8" }} /><YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "#94a3b8" }} tickFormatter={(value) => `KSh {value}`} /><Tooltip cursor={{ fill: "#f7faf9" }} formatter={(value: number) => [`KSh {value.toFixed(2)}`, "Collected"]} contentStyle={{ borderRadius: 12, border: "1px solid #e2e8f0", fontSize: 12 }} /><Bar dataKey="collected" fill="#0b645c" radius={[6, 6, 0, 0]} maxBarSize={34} /></BarChart></ResponsiveContainer></div>
+              <div className="mt-5 h-[210px] w-full"><ResponsiveContainer width="100%" height="100%"><BarChart data={paymentTrend} margin={{ top: 4, right: 4, left: -18, bottom: 0 }}><CartesianGrid vertical={false} stroke="#edf1f1" /><XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "#94a3b8" }} /><YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "#94a3b8" }} tickFormatter={(value) => `KSh ${value}`} /><Tooltip cursor={{ fill: "#f7faf9" }} formatter={(value: number) => [`KSh ${value.toFixed(2)}`, "Collected"]} contentStyle={{ borderRadius: 12, border: "1px solid #e2e8f0", fontSize: 12 }} /><Bar dataKey="collected" fill="#0b645c" radius={[6, 6, 0, 0]} maxBarSize={34} /></BarChart></ResponsiveContainer></div>
             </div>
             <div className="rounded-2xl bg-white p-5 ring-1 ring-slate-200"><div><h3 className="font-display text-lg font-bold tracking-tight">Payment history</h3><p className="mt-1 text-xs text-slate-500">Number of payments recorded each month</p></div><div className="mt-5 space-y-3">{paymentTrend.map((month) => <div key={month.key} className="flex items-center gap-3"><span className="w-8 text-xs font-bold text-slate-500">{month.month}</span><div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-100"><div className="h-full rounded-full bg-[#f0bc54]" style={{ width: `${Math.min(month.payments * 20, 100)}%` }} /></div><span className="w-5 text-right text-xs font-bold text-slate-700">{month.payments}</span></div>)}</div><div className="mt-5 border-t border-slate-100 pt-4 text-xs text-slate-500"><span className="font-bold text-slate-900">{recentPayments.length}</span> recent payment records available for reporting.</div></div>
           </section>
