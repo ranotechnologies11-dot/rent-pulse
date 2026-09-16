@@ -146,7 +146,7 @@ export default function Home() {
 
       {mobileNavOpen && <button className="fixed inset-0 z-30 bg-slate-950/20 lg:hidden" onClick={() => setMobileNavOpen(false)} aria-label="Close navigation overlay" />}
 
-      <main className="min-w-0 flex-1">
+      <main className="min-w-0 flex-1 pb-24 lg:pb-0">
         <header className="sticky top-0 z-20 border-b border-[#29514d] bg-[#102c2a] text-white shadow-[0_10px_30px_rgba(10,45,42,.12)] dark:border-[#284541] dark:bg-[#0b1c1b]">
           <div className="mx-auto flex min-h-[78px] max-w-[1400px] items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-9">
             <div className="flex min-w-0 items-center gap-3">
@@ -225,6 +225,20 @@ export default function Home() {
 
         </div>
       </main>
+
+      <nav className="fixed inset-x-3 bottom-[calc(.75rem+env(safe-area-inset-bottom))] z-30 rounded-[22px] border border-white/70 bg-[#102c2a]/95 p-1.5 shadow-[0_18px_45px_rgba(10,45,42,.24)] backdrop-blur-2xl lg:hidden dark:border-white/10 dark:bg-[#0b1c1b]/95" aria-label="Mobile workspace navigation">
+        <div className="grid grid-cols-4 gap-1">
+          {navItems.map(({ label, href, icon: Icon }) => {
+            const active = location === href;
+            return <Link key={href} href={href} aria-current={active ? "page" : undefined} className={`group flex min-w-0 items-center justify-center rounded-[17px] py-2.5 text-[10px] font-bold transition-[background-color,color,box-shadow] duration-200 ease-out ${active ? "bg-[#f5c96a] text-[#173b37] shadow-[0_6px_16px_rgba(245,201,106,.22)]" : "text-[#a9cbc4] hover:bg-white/10 hover:text-white"}`}>
+              <span className="flex min-w-0 items-center justify-center gap-1.5">
+                <Icon className={`h-[17px] w-[17px] shrink-0 transition-transform duration-200 ease-out ${active ? "scale-105 stroke-[2.4]" : "stroke-[1.8] group-hover:-translate-y-0.5"}`} />
+                <span className={`overflow-hidden whitespace-nowrap transition-[max-width,opacity,transform] duration-200 ease-out ${active ? "max-w-[72px] translate-x-0 opacity-100" : "max-w-0 -translate-x-1 opacity-0"}`}>{label === "Financial reports" ? "Reports" : label}</span>
+              </span>
+            </Link>;
+          })}
+        </div>
+      </nav>
 
       <ActivityLogsModal isOpen={isActivityOpen} onClose={() => setIsActivityOpen(false)} logs={recentLogs} />
       <HelpCenterModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
