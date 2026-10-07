@@ -118,6 +118,27 @@
 .dark [class~="bg-[#f4ead8]"], .dark [class~="bg-[#f4e8d4]"] { background-color: #3b3424 !important; }
 .dark [class~="bg-white\/95"], .dark [class~="bg-white\/75"] { background-color: #182525eF !important; }
 
+/* Stitch-inspired workspace: charcoal canvas, dotted technical grid, cyan/emerald signal colors. */
+.stitch-app {
+  background-color: #10171a !important;
+  background-image: radial-gradient(rgba(126, 176, 181, .16) 1px, transparent 1px) !important;
+  background-size: 18px 18px !important;
+}
+.stitch-app main { background: transparent !important; }
+.stitch-app [class~="bg-white"], .stitch-app [class~="bg-white\/55"], .stitch-app [class~="bg-white\/95"] { background-color: #172226 !important; }
+.stitch-app [class~="bg-card"] { background-color: #172226 !important; }
+.stitch-app [class~="bg-slate-50"], .stitch-app [class~="bg-[#f6f8f8]"], .stitch-app [class~="bg-[#f5f7f6]"] { background-color: #101a1e !important; }
+.stitch-app [class~="bg-[#e5f1ee]"], .stitch-app [class~="bg-[#e6f3f0]"], .stitch-app [class~="bg-[#e7f4ee]"] { background-color: #143b38 !important; }
+.stitch-app [class~="text-slate-950"], .stitch-app [class~="text-slate-900"], .stitch-app [class~="text-slate-800"], .stitch-app [class~="text-[#162a2a]"], .stitch-app [class~="text-[#193a38]"], .stitch-app [class~="text-[#183735]"] { color: #edf8f5 !important; }
+.stitch-app [class~="text-slate-700"], .stitch-app [class~="text-slate-600"], .stitch-app [class~="text-slate-500"], .stitch-app [class*="text-[#"] { color: #8ea6aa !important; }
+.stitch-app [class~="border-slate-200"], .stitch-app [class~="border-slate-100"], .stitch-app [class*="border-[#"] { border-color: #2b4146 !important; }
+.stitch-app [class~="ring-slate-200"], .stitch-app [class~="ring-slate-100"], .stitch-app [class~="ring-border"] { --tw-ring-color: #2b4146 !important; }
+.stitch-app input, .stitch-app select, .stitch-app textarea { background-color: #142125 !important; border-color: #30464a !important; color: #edf8f5 !important; }
+.stitch-app .text-\[\#0b645c\], .stitch-app .text-\[\#0d625a\] { color: #4de1d0 !important; }
+.stitch-app .bg-\[\#0b645c\], .stitch-app .bg-\[\#0f6c63\] { background-color: #0d776d !important; }
+.stitch-app .bg-\[\#f5c96a\] { background-color: #21d8c1 !important; }
+.stitch-app .text-\[\#193b38\] { color: #062823 !important; }
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

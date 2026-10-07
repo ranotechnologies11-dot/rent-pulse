@@ -101,7 +101,7 @@ export default function Home() {
   }, [recentPayments]);
 
   return (
-    <div className="min-h-screen bg-[#f6f8f8] text-slate-950 flex">
+    <div className="stitch-app min-h-screen bg-[#10171a] text-[#edf8f5] flex">
       {/* Desktop sidebar */}
       <aside className={`${mobileNavOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"} fixed lg:sticky top-0 z-40 h-screen w-[252px] shrink-0 border-r border-slate-200 bg-white px-4 py-5 transition-transform duration-200`}>
         <div className="flex h-full flex-col">
