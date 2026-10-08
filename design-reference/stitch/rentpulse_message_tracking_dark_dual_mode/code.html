@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..24,400..700,0..1,-50..200" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "error-container": "#93000a", "surface-container-high": "#282a2f", "on-error-container": "#ffdad6", "tertiary-fixed-dim": "#4edea3", "background": "#111318", "inverse-on-surface": "#2e3036", "surface-container-lowest": "#0c0e13", "on-tertiary": "#003824", "on-secondary-container": "#cdd7ff", "inverse-primary": "#00677f", "surface-container-highest": "#33353a", "on-primary-container": "#00566a", "secondary-fixed-dim": "#b4c5ff", "surface-bright": "#37393f", "secondary-fixed": "#dbe1ff", "on-primary": "#003543", "surface-tint": "#47d6ff", "surface": "#111318", "outline": "#859399", "outline-variant": "#3c494e", "surface-container-low": "#1a1b21", "primary-fixed": "#b6ebff", "on-error": "#690005", "primary": "#a5e7ff", "on-tertiary-container": "#005b3d", "on-primary-fixed": "#001f28", "on-secondary": "#002a78", "on-background": "#e2e2e9", "error": "#ffb4ab", "secondary-container": "#0053db", "on-surface": "#e2e2e9", "on-tertiary-fixed-variant": "#005236", "surface-variant": "#33353a", "on-surface-variant": "#bbc9cf", "surface-container": "#1e2025", "on-secondary-fixed-variant": "#003ea8", "inverse-surface": "#e2e2e9", "tertiary-container": "#48d99e", "on-secondary-fixed": "#00174b", "on-tertiary-fixed": "#002113", "secondary": "#b4c5ff", "primary-fixed-dim": "#47d6ff", "tertiary": "#69f6b9", "on-primary-fixed-variant": "#004e60", "tertiary-fixed": "#6ffbbe", "surface-dim": "#111318", "primary-container": "#00d2ff" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "gutter": "1rem", "space-lg": "1.5rem", "space-xl": "2rem", "margin": "1rem", "space-xs": "0.25rem", "space-md": "1rem", "space-sm": "0.5rem" }, "fontFamily": { "body-lg": ["Plus Jakarta Sans"], "body-sm": ["Plus Jakarta Sans"], "label-caps": ["Plus Jakarta Sans"], "label-data-sm": ["JetBrains Mono"], "display-lg-mobile": ["Plus Jakarta Sans"], "title-md": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "label-data-lg": ["JetBrains Mono"], "headline-lg": ["Plus Jakarta Sans"], "headline-sm": ["Plus Jakarta Sans"] }, "fontSize": { "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }], "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "400" }], "label-caps": ["11px", { "lineHeight": "14px", "letterSpacing": "0.08em", "fontWeight": "700" }], "label-data-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }], "display-lg-mobile": ["32px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "title-md": ["16px", { "lineHeight": "22px", "fontWeight": "600" }], "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }], "label-data-lg": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "headline-sm": ["20px", { "lineHeight": "26px", "letterSpacing": "-0.01em", "fontWeight": "600" }] } } } };</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head><body class="bg-[#FAF8FF] dark:bg-[#0A0E17] font-body-md text-body-md text-[#131B2E] dark:text-[#E2E8F0] flex flex-col min-h-screen transition-colors duration-300">
+<!-- Top Navigation Header -->
+<header class="fixed top-0 w-full z-50 bg-[#FAF8FF]/90 dark:bg-[#0A0E17]/90 backdrop-blur-xl border-b border-slate-200/80 dark:border-slate-800/80 pt-safe transition-colors duration-300">
+<div class="h-16 px-4 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center text-white shadow-lg shadow-cyan-500/20">
+<span class="material-symbols-outlined text-[20px]">hub</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[11px] font-bold uppercase tracking-wider text-cyan-600 dark:text-cyan-400">RentPulse</span>
+<span class="text-[16px] font-bold text-slate-900 dark:text-white leading-tight">Message Tracking &amp; M-Pesa</span>
+</div>
+</div>
+<div class="flex items-center gap-1.5">
+<!-- Dark / Light Theme Toggle Button -->
+<button aria-label="Toggle Dark Mode" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-[#181E2E] text-slate-700 dark:text-cyan-400 border border-slate-200 dark:border-slate-800 hover:scale-105 active:scale-95 transition-all" id="theme-toggle-btn">
+<span class="material-symbols-outlined text-[20px] dark:hidden">dark_mode</span>
+<span class="material-symbols-outlined text-[20px] hidden dark:inline">light_mode</span>
+</button>
+<button aria-label="Notifications" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-[#181E2E] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:text-cyan-500 relative transition-colors">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-[#0A0E17]"></span>
+</button>
+<div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-white font-bold text-xs shadow-md shadow-emerald-500/20">
+<span class="material-symbols-outlined text-[19px]">person</span>
+</div>
+</div>
+</div>
+</header>
+<main class="flex-1 w-full pt-16 pb-24 px-4"><div class="flex flex-col w-full gap-4 pb-4 mt-3">
+<!-- Top Visual Banner / Live Gateway Micro-Card -->
+<div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#063b36] via-[#0b292f] to-[#0d1f30] dark:from-[#062423] dark:via-[#091e2b] dark:to-[#0f172a] text-white border border-emerald-500/30 shadow-xl shadow-emerald-950/40 p-4">
+<div class="absolute -right-8 -bottom-8 w-36 h-36 rounded-full bg-emerald-400/10 pointer-events-none blur-2xl"></div>
+<div class="absolute top-0 right-10 w-24 h-24 rounded-full bg-cyan-400/10 pointer-events-none blur-xl"></div>
+<div class="relative z-10 flex flex-col gap-2.5">
+<div class="flex items-center justify-between">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 font-semibold text-[11px] tracking-wide">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
+</span>
+        LIVE GATEWAY
+      </span>
+<div class="flex items-center gap-1 px-2 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-400/20 text-cyan-300 text-xs">
+<span class="material-symbols-outlined text-[16px] text-cyan-400 animate-pulse">cell_tower</span>
+<span class="font-mono text-[11px]">Stream 99.9%</span>
+</div>
+</div>
+<div class="flex flex-col gap-0.5">
+<h2 class="text-[20px] font-bold text-white tracking-tight flex items-center gap-1.5">
+        Safaricom M-Pesa Parser
+      </h2>
+<p class="text-[12px] text-slate-300 font-medium">Automated Background SMS Stream: Active &amp; Connected</p>
+</div>
+<div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-slate-300 text-[12px] pt-1">
+<div class="flex items-center gap-1 font-mono text-cyan-300">
+<span class="material-symbols-outlined text-[15px] text-emerald-400">storefront</span>
+<span class="font-semibold">Till #784920</span>
+</div>
+<span class="text-slate-500">•</span>
+<span class="text-slate-200">Sunset &amp; Kilimani Portfolio</span>
+</div>
+<div class="flex items-center gap-1.5 text-slate-400 text-[11px] pt-0.5 border-t border-white/10 mt-1">
+<span class="material-symbols-outlined text-[14px] text-cyan-400">sync</span>
+<span>Just now · 42 incoming SMS parsed this week</span>
+</div>
+</div>
+</div>
+<!-- Attention / Actionable Alert: 1 Unmatched Payment -->
+<div class="flex flex-col rounded-2xl bg-white dark:bg-[#161B28] border border-rose-200 dark:border-rose-950/60 shadow-lg p-4 relative overflow-hidden transition-colors">
+<div class="absolute -top-10 -right-10 w-28 h-28 bg-rose-500/10 rounded-full blur-2xl pointer-events-none"></div>
+<div class="flex items-start justify-between gap-2">
+<div class="flex items-center gap-2 text-rose-600 dark:text-rose-400 font-bold text-[17px]">
+<span class="material-symbols-outlined text-[22px] text-rose-500 animate-bounce">error</span>
+<span>1 Unmatched Payment</span>
+</div>
+<span class="px-2.5 py-0.5 rounded-full bg-rose-100 dark:bg-rose-950/70 border border-rose-300 dark:border-rose-800/60 text-rose-700 dark:text-rose-300 font-bold text-[11px] uppercase tracking-wider">
+      Needs Review
+    </span>
+</div>
+<!-- Raw SMS Box -->
+<div class="mt-3 rounded-xl bg-slate-50 dark:bg-[#0E131F] border border-slate-200 dark:border-slate-800/80 p-3 flex flex-col gap-1.5 shadow-inner">
+<div class="flex items-center justify-between text-slate-500 dark:text-slate-400 text-[11px]">
+<span class="font-bold tracking-wider uppercase text-cyan-600 dark:text-cyan-400 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">sms</span> RAW INCOMING SMS
+      </span>
+<span class="font-mono text-cyan-600 dark:text-cyan-400 font-semibold">04/10/24 10:14 AM</span>
+</div>
+<p class="font-mono text-[12px] text-slate-800 dark:text-slate-200 leading-relaxed select-all">
+      “QK79XX889 Confirmed. You have received Ksh 35,000 from <strong class="text-emerald-600 dark:text-emerald-400 font-bold">GRACE WANJIKU</strong> on 04/10/24 at 10:14 AM. New M-PESA balance is Ksh 342,800.”
+    </p>
+</div>
+<!-- Smart AI Suggestion Panel -->
+<div class="mt-3 flex flex-col gap-3 rounded-xl bg-slate-100/80 dark:bg-[#1E2538] border border-slate-200 dark:border-slate-700/60 p-3.5 shadow-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5 text-cyan-600 dark:text-cyan-400 font-bold text-[12px] tracking-wider uppercase">
+<span class="material-symbols-outlined text-[18px]">auto_awesome</span>
+<span>Smart Tenant Match (98% match)</span>
+</div>
+<span class="text-[11px] text-slate-500 dark:text-slate-400 font-mono">Matched by Name</span>
+</div>
+<div class="flex items-center justify-between gap-3">
+<div class="flex items-center gap-2.5 min-w-0">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-600 to-blue-500 text-white flex items-center justify-center font-bold text-[15px] shrink-0 shadow">
+          GW
+        </div>
+<div class="flex flex-col min-w-0">
+<span class="font-bold text-[15px] text-slate-900 dark:text-white truncate">Grace Wanjiku</span>
+<span class="text-[12px] text-slate-500 dark:text-slate-400 truncate">Unit 6B · Sunset Heights</span>
+</div>
+</div>
+<div class="text-right shrink-0">
+<span class="text-[11px] text-slate-500 dark:text-slate-400 block font-medium">Rent Due</span>
+<span class="text-[18px] font-bold text-cyan-600 dark:text-cyan-400 font-mono">KES 35,000</span>
+</div>
+</div>
+<div class="flex items-center gap-2 pt-1">
+<button class="flex-1 min-h-[44px] rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[13px] flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-700/30 active:scale-[0.98] transition-all" id="reconcile-btn">
+<span class="material-symbols-outlined text-[18px]">check_circle</span>
+        Assign &amp; Reconcile
+      </button>
+<button class="min-h-[44px] px-4 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-[13px] active:scale-[0.98] transition-all" id="dismiss-btn">
+        Skip
+      </button>
+</div>
+</div>
+</div>
+<!-- Automation Rules & Filter Rules -->
+<div class="flex flex-col gap-3 rounded-2xl bg-white dark:bg-[#161B28] border border-slate-200 dark:border-slate-800/80 p-4 shadow-sm transition-colors">
+<div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800/60 pb-2.5">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-lg bg-cyan-500/10 dark:bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">tune</span>
+</div>
+<h3 class="text-[17px] font-bold text-slate-900 dark:text-white">Automation Rules</h3>
+</div>
+<span class="px-2.5 py-0.5 rounded-full bg-emerald-500/10 dark:bg-emerald-950/60 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 font-bold text-[11px] uppercase tracking-wider">
+      Engine Active
+    </span>
+</div>
+<!-- Toggle 1 -->
+<div class="flex items-center justify-between gap-3 py-1">
+<div class="flex flex-col">
+<span class="text-[14px] font-semibold text-slate-900 dark:text-slate-100">Phone Number Matching</span>
+<span class="text-[12px] text-slate-500 dark:text-slate-400">Auto-match tenant mobile numbers from M-Pesa sender string</span>
+</div>
+<button aria-checked="true" class="rule-toggle relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full bg-cyan-500 dark:bg-cyan-500 transition-colors duration-200" role="switch">
+<span class="translate-x-6 pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 mt-0.5 ml-0.5"></span>
+</button>
+</div>
+<!-- Toggle 2 -->
+<div class="flex items-center justify-between gap-3 py-1">
+<div class="flex flex-col">
+<span class="text-[14px] font-semibold text-slate-900 dark:text-slate-100">Auto-Receipt Delivery</span>
+<span class="text-[12px] text-slate-500 dark:text-slate-400">Instant WhatsApp &amp; SMS digital rent receipt dispatch upon match</span>
+</div>
+<button aria-checked="true" class="rule-toggle relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full bg-cyan-500 dark:bg-cyan-500 transition-colors duration-200" role="switch">
+<span class="translate-x-6 pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 mt-0.5 ml-0.5"></span>
+</button>
+</div>
+<!-- Keyword Triggers Tags -->
+<div class="flex flex-col gap-1.5 pt-2 border-t border-slate-100 dark:border-slate-800/60">
+<span class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">PARSER KEYWORD TRIGGERS</span>
+<div class="flex flex-wrap gap-1.5">
+<span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-[#0E131F] border border-slate-200 dark:border-slate-800 font-mono text-[11px] text-slate-700 dark:text-slate-300 flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-emerald-500">check</span>
+        “Confirmed. You have received”
+      </span>
+<span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-[#0E131F] border border-slate-200 dark:border-slate-800 font-mono text-[11px] text-slate-700 dark:text-slate-300 flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-emerald-500">check</span>
+        “Paybill”
+      </span>
+<span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-[#0E131F] border border-slate-200 dark:border-slate-800 font-mono text-[11px] text-slate-700 dark:text-slate-300 flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-emerald-500">check</span>
+        “Till”
+      </span>
+</div>
+</div>
+</div>
+<!-- Recent Chronological Log Feed -->
+<div class="flex flex-col gap-3">
+<div class="flex items-center justify-between px-1">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-cyan-600 dark:text-cyan-400 text-[20px]">history</span>
+<h3 class="text-[17px] font-bold text-slate-900 dark:text-white">Recent M-Pesa Log</h3>
+</div>
+<span class="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+      Real-Time Sync
+    </span>
+</div>
+<div class="flex flex-col gap-2.5">
+<!-- Item 1 -->
+<div class="flex flex-col gap-1.5 rounded-2xl bg-white dark:bg-[#161B28] border border-slate-200 dark:border-slate-800/80 p-3.5 shadow-sm relative overflow-hidden transition-colors">
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-emerald-500"></div>
+<div class="flex items-center justify-between pl-1">
+<div class="flex items-center gap-1.5">
+<span class="font-mono text-[12px] font-bold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-[#0E131F] text-cyan-600 dark:text-cyan-400 border border-slate-200 dark:border-slate-800">QK78PZ19L</span>
+<span class="text-[12px] text-slate-500 dark:text-slate-400">· 24m ago</span>
+</div>
+<span class="font-mono text-[18px] font-extrabold text-emerald-600 dark:text-emerald-400">KES 45,000</span>
+</div>
+<div class="flex items-center justify-between pl-1 pt-0.5">
+<div class="flex items-center gap-1.5 min-w-0">
+<span class="material-symbols-outlined text-[16px] text-slate-400">person</span>
+<span class="font-bold text-[14px] text-slate-900 dark:text-slate-200 truncate">Dennis Kamau</span>
+<span class="text-[12px] text-slate-500 dark:text-slate-400">· Unit 4B</span>
+</div>
+<span class="px-2.5 py-0.5 rounded-full bg-emerald-500/10 dark:bg-emerald-950/60 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-[11px] font-bold flex items-center gap-1 shrink-0">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+          Reconciled
+        </span>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="flex flex-col gap-1.5 rounded-2xl bg-white dark:bg-[#161B28] border border-slate-200 dark:border-slate-800/80 p-3.5 shadow-sm relative overflow-hidden transition-colors">
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-emerald-500"></div>
+<div class="flex items-center justify-between pl-1">
+<div class="flex items-center gap-1.5">
+<span class="font-mono text-[12px] font-bold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-[#0E131F] text-cyan-600 dark:text-cyan-400 border border-slate-200 dark:border-slate-800">QK78ML42X</span>
+<span class="text-[12px] text-slate-500 dark:text-slate-400">· 2h ago</span>
+</div>
+<span class="font-mono text-[18px] font-extrabold text-emerald-600 dark:text-emerald-400">KES 30,000</span>
+</div>
+<div class="flex items-center justify-between pl-1 pt-0.5">
+<div class="flex items-center gap-1.5 min-w-0">
+<span class="material-symbols-outlined text-[16px] text-slate-400">person</span>
+<span class="font-bold text-[14px] text-slate-900 dark:text-slate-200 truncate">Faith Wanjiru</span>
+<span class="text-[12px] text-slate-500 dark:text-slate-400">· Unit 2A</span>
+</div>
+<span class="px-2.5 py-0.5 rounded-full bg-emerald-500/10 dark:bg-emerald-950/60 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-[11px] font-bold flex items-center gap-1 shrink-0">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+          Reconciled
+        </span>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="flex flex-col gap-1.5 rounded-2xl bg-white dark:bg-[#161B28] border border-slate-200 dark:border-slate-800/80 p-3.5 shadow-sm relative overflow-hidden transition-colors">
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-amber-500"></div>
+<div class="flex items-center justify-between pl-1">
+<div class="flex items-center gap-1.5">
+<span class="font-mono text-[12px] font-bold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-[#0E131F] text-cyan-600 dark:text-cyan-400 border border-slate-200 dark:border-slate-800">QK77YR88D</span>
+<span class="text-[12px] text-slate-500 dark:text-slate-400">· Yesterday</span>
+</div>
+<span class="font-mono text-[18px] font-extrabold text-slate-900 dark:text-slate-200">KES 25,000</span>
+</div>
+<div class="flex items-center justify-between pl-1 pt-0.5">
+<div class="flex items-center gap-1.5 min-w-0">
+<span class="material-symbols-outlined text-[16px] text-slate-400">person</span>
+<span class="font-bold text-[14px] text-slate-900 dark:text-slate-200 truncate">Brian Ochieng</span>
+<span class="text-[12px] text-slate-500 dark:text-slate-400">· Unit 1C</span>
+</div>
+<span class="px-2.5 py-0.5 rounded-full bg-amber-500/10 dark:bg-amber-950/60 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-[11px] font-bold flex items-center gap-1 shrink-0">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+          Partial Credited
+        </span>
+</div>
+</div>
+</div>
+</div>
+<!-- Utility Actions Card Grid -->
+<div class="grid grid-cols-2 gap-3 pt-1">
+<button class="flex flex-col items-center justify-center gap-1.5 p-3.5 rounded-2xl bg-white dark:bg-[#161B28] border border-slate-200 dark:border-slate-800 hover:border-cyan-500/40 text-slate-800 dark:text-slate-200 active:scale-95 transition-all min-h-[76px] shadow-sm" id="test-parser-btn">
+<div class="w-8 h-8 rounded-lg bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">terminal</span>
+</div>
+<span class="text-[12px] font-bold text-center">Test SMS Parser</span>
+</button>
+<button class="flex flex-col items-center justify-center gap-1.5 p-3.5 rounded-2xl bg-white dark:bg-[#161B28] border border-slate-200 dark:border-slate-800 hover:border-cyan-500/40 text-slate-800 dark:text-slate-200 active:scale-95 transition-all min-h-[76px] shadow-sm" id="export-statement-btn">
+<div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">file_download</span>
+</div>
+<span class="text-[12px] font-bold text-center">Export Statement</span>
+</button>
+</div>
+<!-- Toast Notification Template -->
+<div class="hidden fixed bottom-20 left-4 right-4 z-50 rounded-xl bg-slate-900/95 dark:bg-[#1E2538]/95 backdrop-blur-md text-white p-3.5 shadow-2xl border border-cyan-500/30 flex items-center justify-between" id="toast">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-emerald-400 text-[20px]">task_alt</span>
+<span class="text-[13px] font-medium" id="toast-message">Payment assigned to Unit 6B successfully!</span>
+</div>
+<button class="text-slate-400 hover:text-white" id="toast-close">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+</div>
+<script>
+  // Micro-interactions & Theme Switcher
+  (function() {
+    // Theme Toggle Handler
+    const themeToggleBtn = document.getElementById('theme-toggle-btn');
+    if (themeToggleBtn) {
+      themeToggleBtn.addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+        const isDark = document.documentElement.classList.contains('dark');
+        showToast(isDark ? 'Switched to Dark Mode' : 'Switched to Light Mode');
+      });
+    }
+
+    const toggles = document.querySelectorAll('.rule-toggle');
+    toggles.forEach(toggle => {
+      toggle.addEventListener('click', () => {
+        const isChecked = toggle.getAttribute('aria-checked') === 'true';
+        toggle.setAttribute('aria-checked', (!isChecked).toString());
+        const knob = toggle.querySelector('span');
+        if (isChecked) {
+          toggle.classList.remove('bg-cyan-500');
+          toggle.classList.add('bg-slate-300', 'dark:bg-slate-700');
+          knob.classList.remove('translate-x-6');
+          knob.classList.add('translate-x-0.5');
+        } else {
+          toggle.classList.remove('bg-slate-300', 'dark:bg-slate-700');
+          toggle.classList.add('bg-cyan-500');
+          knob.classList.remove('translate-x-0.5');
+          knob.classList.add('translate-x-6');
+        }
+      });
+    });
+
+    const toast = document.getElementById('toast');
+    const toastMsg = document.getElementById('toast-message');
+    const toastClose = document.getElementById('toast-close');
+    let toastTimer = null;
+
+    function showToast(text) {
+      if (!toast) return;
+      if (toastTimer) clearTimeout(toastTimer);
+      toastMsg.textContent = text;
+      toast.classList.remove('hidden');
+      toastTimer = setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 3500);
+    }
+
+    if (toastClose) {
+      toastClose.addEventListener('click', () => toast.classList.add('hidden'));
+    }
+
+    const reconcileBtn = document.getElementById('reconcile-btn');
+    if (reconcileBtn) {
+      reconcileBtn.addEventListener('click', () => {
+        showToast('Grace Wanjiku (Unit 6B) reconciled & receipt dispatched via WhatsApp!');
+        const alertCard = reconcileBtn.closest('.rounded-2xl.bg-white, .rounded-2xl.dark\\:bg-\\[\\#161B28\\]');
+        if (alertCard) {
+          alertCard.style.opacity = '0.55';
+          reconcileBtn.disabled = true;
+          reconcileBtn.innerHTML = '<span class="material-symbols-outlined text-[18px]">check</span> Assigned';
+        }
+      });
+    }
+
+    const dismissBtn = document.getElementById('dismiss-btn');
+    if (dismissBtn) {
+      dismissBtn.addEventListener('click', () => {
+        showToast('Payment deferred for manual inspection.');
+      });
+    }
+
+    const testBtn = document.getElementById('test-parser-btn');
+    if (testBtn) {
+      testBtn.addEventListener('click', () => {
+        showToast('Simulated incoming M-Pesa SMS parsed with 100% keyword match.');
+      });
+    }
+
+    const exportBtn = document.getElementById('export-statement-btn');
+    if (exportBtn) {
+      exportBtn.addEventListener('click', () => {
+        showToast('Generating CSV & PDF statement for October 2024...');
+      });
+    }
+  })();
+</script>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 w-full z-50 pb-safe bg-[#FAF8FF]/90 dark:bg-[#0A0E17]/90 backdrop-blur-xl border-t border-slate-200/80 dark:border-slate-800/80 transition-colors duration-300">
+<div class="h-16 px-4 flex items-center justify-around">
+<a class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] text-slate-500 dark:text-slate-400 hover:text-cyan-500 transition-colors" data-path="landlord-dashboard" href="#">
+<span class="material-symbols-outlined text-[22px]">dashboard</span>
+<span class="text-[11px] font-medium mt-0.5">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] text-slate-500 dark:text-slate-400 hover:text-cyan-500 transition-colors" data-path="tenants-and-payments" href="#">
+<span class="material-symbols-outlined text-[22px]">group</span>
+<span class="text-[11px] font-medium mt-0.5">Tenants</span>
+</a>
+<a aria-current="page" class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] transition-colors text-cyan-600 dark:text-cyan-400 font-bold relative" data-path="message-tracking-and-m-pesa-tracker" href="#">
+<span class="material-symbols-outlined text-[24px]">payments</span>
+<span class="text-[11px] font-bold mt-0.5">M-Pesa</span>
+<span class="w-1.5 h-1.5 rounded-full bg-cyan-500 absolute -bottom-1"></span>
+</a>
+<a class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] text-slate-500 dark:text-slate-400 hover:text-cyan-500 transition-colors" data-path="settings" href="#">
+<span class="material-symbols-outlined text-[22px]">settings</span>
+<span class="text-[11px] font-medium mt-0.5">Settings</span>
+</a>
+</div>
+</nav>
+</body></html>
