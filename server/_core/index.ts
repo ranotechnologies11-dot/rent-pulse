@@ -2,6 +2,9 @@ import "dotenv/config";
 import express from "express";
 import { createServer } from "http";
 import net from "net";
+import { timingSafeEqual } from "node:crypto";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { registerOAuthRoutes } from "./oauth";
 import { registerStorageProxy } from "./storageProxy";
@@ -34,9 +37,37 @@ async function findAvailablePort(startPort: number = 3000): Promise<number> {
 async function startServer() {
   const app = express();
   const server = createServer(app);
-  // Configure body parser with larger size limit for file uploads
-  app.use(express.json({ limit: "50mb" }));
-  app.use(express.urlencoded({ limit: "50mb", extended: true }));
+  app.disable("x-powered-by");
+  app.set("trust proxy", 1);
+  app.use(helmet({
+    contentSecurityPolicy: ENV.isProduction ? {
+      directives: {
+        defaultSrc: ["'self'"],
+        baseUri: ["'self'"],
+        objectSrc: ["'none'"],
+        frameAncestors: ["'none'"],
+        formAction: ["'self'"],
+        scriptSrc: ["'self'", "https:"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com", "data:"],
+        imgSrc: ["'self'", "data:", "blob:", "https:"],
+        connectSrc: ["'self'", "https:"],
+      },
+    } : false,
+    crossOriginEmbedderPolicy: false,
+  }));
+  app.use((req, res, next) => {
+    const origin = req.get("origin");
+    const expectedOrigin = `${req.protocol}://${req.get("host")}`;
+    if (origin && origin !== expectedOrigin) return res.status(403).json({ error: "Cross-origin request denied." });
+    next();
+  });
+  const apiLimiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: 300, standardHeaders: "draft-8", legacyHeaders: false, message: { error: "Too many requests. Please try again later." } });
+  const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: 20, standardHeaders: "draft-8", legacyHeaders: false, message: { error: "Too many authentication attempts. Please try again later." } });
+  app.use("/api", apiLimiter);
+  app.use("/api/oauth", authLimiter);
+  app.use(express.json({ limit: "1mb", strict: true }));
+  app.use(express.urlencoded({ limit: "256kb", extended: false }));
   registerStorageProxy(app);
   registerOAuthRoutes(app);
   // tRPC API
@@ -44,7 +75,10 @@ async function startServer() {
     try {
       const authorization = req.header("authorization");
       const suppliedSecret = authorization?.startsWith("Bearer ") ? authorization.slice(7) : req.header("x-cron-secret");
-      if (!ENV.cronSecret || suppliedSecret !== ENV.cronSecret) {
+      const expected = Buffer.from(ENV.cronSecret || "", "utf8");
+      const supplied = Buffer.from(suppliedSecret || "", "utf8");
+      const validSecret = expected.length > 0 && expected.length === supplied.length && timingSafeEqual(expected, supplied);
+      if (!validSecret) {
         return res.status(401).json({ ok: false, error: "Unauthorized scheduled reminder request." });
       }
       const serviceClient = createServiceSupabase();
@@ -52,10 +86,8 @@ async function startServer() {
       const result = await runAutomatedReminderCheck(serviceClient, "cron");
       return res.json({ ok: true, ...result });
     } catch (err: any) {
-      return res.status(500).json({
-        error: err?.message || "Scheduled rent reminder check failed",
-        timestamp: new Date().toISOString(),
-      });
+      console.error("[scheduled-reminders] failed", err);
+      return res.status(500).json({ error: "Scheduled reminder check failed." });
     }
   });
   app.use(
@@ -63,6 +95,9 @@ async function startServer() {
     createExpressMiddleware({
       router: appRouter,
       createContext,
+      onError: ({ path, error }) => {
+        if (ENV.isProduction) console.error(`[trpc] ${path ?? "unknown"}`, error.code);
+      },
     })
   );
   // development mode uses Vite, production mode uses static files

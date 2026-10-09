@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Download, FileSpreadsheet, FileText, Printer } from "lucide-react";
-import * as XLSX from "xlsx";
+import ExcelJS from "exceljs";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { trpc } from "@/lib/trpc";
@@ -50,7 +50,7 @@ export default function Reports() {
     .filter((payment) => payment.tenantId === tenantId)
     .sort((a, b) => new Date(b.paidAt).getTime() - new Date(a.paidAt).getTime())[0];
 
-  const exportExcel = () => {
+  const exportExcel = async () => {
     const generated = new Date().toLocaleString();
     const scopeLabel = scope === "all" ? "All tenants" : selectedTenants[0]?.fullName ?? "Individual tenant";
     const rows = selectedTenants.map((tenant) => {
@@ -66,7 +66,6 @@ export default function Reports() {
         "Total Debt (KSh)": Number(tenant.currentBalance || 0),
       };
     });
-    const workbook = XLSX.utils.book_new();
     const summary = [
       ["RentPulse financial report"],
       ["Report scope", scopeLabel],
@@ -77,19 +76,32 @@ export default function Reports() {
       [],
       ["This workbook is prepared from landlord-entered RentPulse ledger records."],
     ];
-    const summarySheet = XLSX.utils.aoa_to_sheet(summary);
-    summarySheet["!cols"] = [{ wch:  thirtyFive }, { wch:  thirtyFive }];
-    const ledgerSheet = XLSX.utils.json_to_sheet(rows);
-    ledgerSheet["!cols"] = [
-      { wch: 24 }, { wch: 10 }, { wch: 18 }, { wch: 14 },
-      { wch: 18 }, { wch: 19 }, { wch: 22 }, { wch: 18 },
-    ];
-    ledgerSheet["!autofilter"] = { ref: `A1:H${Math.max(rows.length + 1, 2)}` };
-    ledgerSheet["!freeze"] = { xSplit: 0, ySplit: 1 };
-    XLSX.utils.book_append_sheet(workbook, summarySheet, "Overview");
-    XLSX.utils.book_append_sheet(workbook, ledgerSheet, "Tenant Ledger");
+    const workbook = new ExcelJS.Workbook();
+    workbook.creator = "RentPulse";
+    workbook.created = new Date();
+    const summarySheet = workbook.addWorksheet("Overview");
+    summarySheet.addRows(summary);
+    summarySheet.columns = [{ width: thirtyFive }, { width: thirtyFive }];
+    const ledgerSheet = workbook.addWorksheet("Tenant Ledger");
+    const columns = ["Tenant", "Unit", "Phone", "Status", "Monthly Rent (KSh)", "Last Payment (KSh)", "Last Payment Date", "Total Debt (KSh)"];
+    ledgerSheet.columns = columns.map((header) => ({ header, key: header, width: header === "Tenant" ? 24 : header.length > 20 ? 22 : 16 }));
+    ledgerSheet.addRows(rows);
+    ledgerSheet.autoFilter = `A1:H${Math.max(rows.length + 1, 2)}`;
+    ledgerSheet.views = [{ state: "frozen", ySplit: 1 }];
+    for (const sheet of [summarySheet, ledgerSheet]) {
+      const header = sheet.getRow(1);
+      header.font = { bold: true, color: { argb: "FFFFFFFF" } };
+      header.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF0B645C" } };
+    }
     const fileScope = scope === "all" ? "all-tenants" : (selectedTenants[0]?.fullName ?? "tenant").toLowerCase().replace(/[^a-z0-9]+/g, "-");
-    XLSX.writeFile(workbook, `rentpulse-${fileScope}-financial-report.xlsx`);
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `rentpulse-${fileScope}-financial-report.xlsx`;
+    link.click();
+    URL.revokeObjectURL(url);
   };
 
   return <LandlordPageShell title="Financial reports" eyebrow="Landlord reporting" description="Export total portfolio or individual tenant financial reports as a printable PDF or Excel workbook.">

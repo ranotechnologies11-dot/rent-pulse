@@ -21,6 +21,8 @@ import {
 import { toast } from "sonner";
 import { CheckCircle2, MessageSquareText, ShieldAlert } from "lucide-react";
 
+type PaymentMethod = "cash" | "bank_transfer" | "mpesa_sms" | "check" | "zelle";
+
 interface PaymentModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -39,7 +41,7 @@ interface PaymentModalProps {
 
 export function PaymentModal({ isOpen, onClose, tenant, onSuccess }: PaymentModalProps) {
   const [amount, setAmount] = useState<string>("");
-  const [paymentMethod, setPaymentMethod] = useState<string>("bank_transfer");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("bank_transfer");
   const [referenceNumber, setReferenceNumber] = useState<string>("");
   const [receiptResult, setReceiptResult] = useState<{
     previousBalance: string;
@@ -201,7 +203,7 @@ export function PaymentModal({ isOpen, onClose, tenant, onSuccess }: PaymentModa
                 <Label htmlFor="method" className="text-xs font-semibold">
                   How Did the Tenant Pay?
                 </Label>
-                <Select value={paymentMethod} onValueChange={setPaymentMethod}>
+                <Select value={paymentMethod} onValueChange={(value) => setPaymentMethod(value as PaymentMethod)}>
                   <SelectTrigger id="method">
                     <SelectValue placeholder="Select method" />
                   </SelectTrigger>

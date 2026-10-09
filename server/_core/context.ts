@@ -21,10 +21,15 @@ export async function createContext(opts: CreateExpressContextOptions): Promise<
     const { data } = await supabase.auth.getUser(token);
     if (data.user) {
       const metadata = data.user.user_metadata ?? {};
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", data.user.id)
+        .maybeSingle();
       user = {
         ...data.user,
         name: String(metadata.full_name ?? data.user.email?.split("@")[0] ?? "Landlord"),
-        role: metadata.role === "manager" ? "manager" : "landlord",
+        role: profile?.role === "manager" ? "manager" : "landlord",
       };
     }
   }
